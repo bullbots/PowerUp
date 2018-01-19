@@ -66,7 +66,7 @@ public class OI {
         throttleStick = new Joystick(0);
         
         joystickButton1 = new JoystickButton(throttleStick, 1);
-        joystickButton1.whileHeld(new Test());
+        joystickButton1.whileHeld(new DriveForward());
 
 
         // SmartDashboard Buttons
