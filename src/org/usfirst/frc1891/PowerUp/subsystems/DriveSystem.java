@@ -58,5 +58,10 @@ public class DriveSystem extends Subsystem {
     // Put methods for controlling this subsystem
     // here. Call these from Commands.
 
+    public void drive(double leftPower, double rightPower) {
+    	leftMasterTalon.set(leftPower);
+    	rightMasterTalon.set(rightPower);
+    }
+    
 }
 
