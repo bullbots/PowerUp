@@ -45,7 +45,7 @@ public class RobotMap {
         driveSystemLeftMasterTalon.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Absolute, 0, timeoutMs);
         
         driveSystemLeftMasterTalon.config_kF(0, 0.08497, timeoutMs);
-        driveSystemLeftMasterTalon.config_kP(0, 0.0004, timeoutMs);
+        driveSystemLeftMasterTalon.config_kP(0, 0.04, timeoutMs);
         driveSystemLeftMasterTalon.config_kI(0, 0, timeoutMs);
         driveSystemLeftMasterTalon.config_kD(0, 0, timeoutMs);
         
@@ -66,7 +66,7 @@ public class RobotMap {
         driveSystemRightMasterTalon.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Absolute, 0, timeoutMs);
         
         driveSystemRightMasterTalon.config_kF(0, 0.08757, timeoutMs);
-        driveSystemRightMasterTalon.config_kP(0, 0, timeoutMs);
+        driveSystemRightMasterTalon.config_kP(0, 0.04, timeoutMs);
         driveSystemRightMasterTalon.config_kI(0, 0, timeoutMs);
         driveSystemRightMasterTalon.config_kD(0, 0, timeoutMs);
         
