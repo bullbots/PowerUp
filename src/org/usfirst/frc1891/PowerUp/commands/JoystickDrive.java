@@ -51,10 +51,10 @@ public class JoystickDrive extends Command {
     protected void execute() {
     	double throttleStick = Robot.oi.getThrottle();
     	double turningStick = Robot.oi.getTurning(); 
+    	boolean quickTurn = Robot.oi.getQuickTurn();
     	
     	
-    	
-    	TankDriveSignal signal = cheesy.calculateSignal(throttleStick, turningStick, false);
+    	TankDriveSignal signal = cheesy.calculateSignal(throttleStick, turningStick, quickTurn);
     	
     	Robot.driveSystem.drive(signal.leftMotor, signal.rightMotor);
     }
