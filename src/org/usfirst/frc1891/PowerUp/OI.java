@@ -101,6 +101,14 @@ public class OI {
     	return throttleStick.getRawButton(8);	
     }
     
+    public boolean getLowGear() {
+    	return throttleStick.getRawButton(1);	
+    }
+    
+    public boolean getHighGear() {
+    	return throttleStick.getRawButton(4);	
+    }
+    
     private double square(double value) {
 		return (value * value) * (value / Math.abs(value));
 	}

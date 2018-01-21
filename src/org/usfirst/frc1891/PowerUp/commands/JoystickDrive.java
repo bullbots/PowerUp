@@ -16,6 +16,7 @@ import org.usfirst.frc1891.PowerUp.CheesyDriveInterpreter;
 import org.usfirst.frc1891.PowerUp.Robot;
 import org.usfirst.frc1891.PowerUp.TankDriveSignal;
 import org.usfirst.frc1891.PowerUp.subsystems.DriveSystem;
+import org.usfirst.frc1891.PowerUp.subsystems.DriveSystem.Gear;
 
 /**
  *
@@ -50,6 +51,15 @@ public class JoystickDrive extends Command {
     // Called repeatedly when this Command is scheduled to run
     @Override
     protected void execute() {
+    	if (Robot.oi.getLowGear()) {
+    		Robot.driveSystem.setWantsLowGear(true);
+    		Robot.driveSystem.setWantsHighGear(false);
+    	}
+    	else if (Robot.oi.getHighGear()) {
+    		Robot.driveSystem.setWantsLowGear(false);
+    		Robot.driveSystem.setWantsHighGear(true);
+    	}
+    	
     	double throttleStick = Robot.oi.getThrottle();
     	double turningStick = Robot.oi.getTurning(); 
     	boolean quickTurn = Robot.oi.getQuickTurn();
@@ -57,8 +67,16 @@ public class JoystickDrive extends Command {
     	
     	TankDriveSignal signal = cheesy.calculateSignal(throttleStick, turningStick, quickTurn);
     	
-    	double leftSpeed = signal.leftMotor * DriveSystem.enforcedLowGearTopSpeedFeet;
-    	double rightSpeed = signal.rightMotor * DriveSystem.enforcedLowGearTopSpeedFeet;
+    	double topSpeed;
+    	if (Robot.driveSystem.currentGear == Gear.LowGear) {
+    		topSpeed = DriveSystem.enforcedLowGearTopSpeedFeet;
+    	}
+    	else {
+    		topSpeed = DriveSystem.enforcedHighGearTopSpeedFeet;
+    	}
+    	
+    	double leftSpeed = signal.leftMotor * topSpeed;
+    	double rightSpeed = signal.rightMotor * topSpeed;
     	
     	Robot.driveSystem.drive(leftSpeed, rightSpeed);
     }
