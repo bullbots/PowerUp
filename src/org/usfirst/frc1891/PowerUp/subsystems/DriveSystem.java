@@ -47,8 +47,8 @@ public class DriveSystem extends Subsystem {
     private final WPI_TalonSRX rightSlaveTalon = RobotMap.driveSystemRightSlaveTalon;
     private DoubleSolenoid shifter;
     
-    private boolean doAutoShift = false;
-    private boolean wantsLowGear = true;
+    private boolean doAutoShift = true;
+    private boolean wantsLowGear = false;
     private boolean wantsHighGear = false;
     
     public Gear currentGear = Gear.LowGear;
@@ -71,6 +71,8 @@ public class DriveSystem extends Subsystem {
     
 	public static final double wheelDiameterFeet = 0.5;
 	public static final double encoderRevsPerWheelRev = 7.5;
+	
+	public int printTimerCount = 0;
 	
 	
 	public DriveSystem() {
@@ -96,8 +98,14 @@ public class DriveSystem extends Subsystem {
     @Override
     public void periodic() {
         // Put code here to be run every loop
-    	publishVelocityToShuffleBoard();
-    	publishTopSpeed();
+    	if (printTimerCount >= 10) {
+    		publishVelocityToShuffleBoard();
+    		printTimerCount = 0;
+    	}
+    	else {
+    		printTimerCount++;
+    	}
+//    	publishTopSpeed();
     }
 
     // Put methods for controlling this subsystem
@@ -117,15 +125,15 @@ public class DriveSystem extends Subsystem {
 
     public void drive(double leftSpeed, double rightSpeed) {
     	if (doAutoShift) {
-    		double currentLeftSpeed = encoderUnitsToFeetPerSec(leftMasterTalon.getSelectedSensorVelocity(0));
-    		double currentRightSpeed = encoderUnitsToFeetPerSec(rightMasterTalon.getSelectedSensorVelocity(0));
+    		double currentLeftSpeed = Math.abs(encoderUnitsToFeetPerSec(leftMasterTalon.getSelectedSensorVelocity(0)));
+    		double currentRightSpeed = Math.abs(encoderUnitsToFeetPerSec(rightMasterTalon.getSelectedSensorVelocity(0)));
     		if (wantsLowGear) {
     			setGear(Gear.LowGear);
     		}
     		else if (currentLeftSpeed > 5 && currentRightSpeed > 5) {
     			setGear(Gear.HighGear);
     		}
-    		else if (currentLeftSpeed < 5 && currentRightSpeed < 5) {
+    		else if (currentLeftSpeed < 4 && currentRightSpeed < 4) {
     			setGear(Gear.LowGear);
     		}
     	}
@@ -139,15 +147,11 @@ public class DriveSystem extends Subsystem {
     	}
     	
     	if (currentGear == Gear.LowGear) {
-	    	leftMasterTalon.selectProfileSlot(0, 0);
 	    	leftMasterTalon.set(ControlMode.Velocity, feetPerSecToEncoderUnits(leftSpeed));
-	    	rightMasterTalon.selectProfileSlot(0, 0);
 	    	rightMasterTalon.set(ControlMode.Velocity, feetPerSecToEncoderUnits(rightSpeed));
     	}
     	else if (currentGear == Gear.HighGear) {
-	    	leftMasterTalon.selectProfileSlot(1, 0);
 	    	leftMasterTalon.set(ControlMode.Velocity, feetPerSecToEncoderUnits(leftSpeed));
-	    	rightMasterTalon.selectProfileSlot(1, 0);
 	    	rightMasterTalon.set(ControlMode.Velocity, feetPerSecToEncoderUnits(rightSpeed));
     	}
     }
@@ -179,10 +183,14 @@ public class DriveSystem extends Subsystem {
     private void setGear(Gear value) {
     	if (value == Gear.LowGear && currentGear != Gear.LowGear) {
     		shifter.set(Value.kForward);
+    		leftMasterTalon.selectProfileSlot(0, 0);
+	    	rightMasterTalon.selectProfileSlot(0, 0);
     		currentGear = Gear.LowGear;
     	}
     	else if (value == Gear.HighGear && currentGear != Gear.HighGear) {
     		shifter.set(Value.kReverse);
+	    	leftMasterTalon.selectProfileSlot(1, 0);
+	    	rightMasterTalon.selectProfileSlot(1, 0);
     		currentGear = Gear.HighGear;
     	}
     }

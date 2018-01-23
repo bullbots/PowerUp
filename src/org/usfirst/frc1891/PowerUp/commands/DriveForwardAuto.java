@@ -41,6 +41,9 @@ public class DriveForwardAuto extends Command {
     // Called just before this Command runs the first time
     protected void initialize() {
     	shotTimer.start();
+    	Robot.driveSystem.setAutoShift(false);
+    	Robot.driveSystem.setWantsLowGear(true);
+    	Robot.driveSystem.setWantsHighGear(false);
     }
 
     // Called repeatedly when this Command is scheduled to run
@@ -59,11 +62,17 @@ public class DriveForwardAuto extends Command {
     // Called once after isFinished returns true
     protected void end() {
     	Robot.driveSystem.drive(0, 0);
+    	Robot.driveSystem.setAutoShift(true);
+    	Robot.driveSystem.setWantsLowGear(false);
+    	Robot.driveSystem.setWantsHighGear(false);
     }
 
     // Called when another command which requires one or more of the same
     // subsystems is scheduled to run
     protected void interrupted() {
     	Robot.driveSystem.drive(0, 0);
+    	Robot.driveSystem.setAutoShift(true);
+    	Robot.driveSystem.setWantsLowGear(false);
+    	Robot.driveSystem.setWantsHighGear(false);
     }
 }

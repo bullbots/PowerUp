@@ -31,7 +31,7 @@ public class RobotMap {
     public static WPI_TalonSRX driveSystemLeftSlaveTalon;
     public static WPI_TalonSRX driveSystemRightMasterTalon;
     public static WPI_TalonSRX driveSystemRightSlaveTalon;
-	private static final int timeoutMs = 100;
+	private static final int timeoutMs = 20;
 	
 	public static final int ShifterLowPort = 1;
 	public static final int ShifterHighPort = 0;
