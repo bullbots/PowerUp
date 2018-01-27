@@ -64,8 +64,8 @@ public class RobotMap {
         driveSystemLeftMasterTalon.config_kI(1, 0, timeoutMs);
         driveSystemLeftMasterTalon.config_kD(1, 0, timeoutMs);
         
-        driveSystemLeftMasterTalon.configMotionCruiseVelocity(DriveSystem.feetPerSecToEncoderUnits(DriveSystem.maxVelocity), timeoutMs); 
-        driveSystemLeftMasterTalon.configMotionAcceleration(DriveSystem.feetPerSecToEncoderUnits(DriveSystem.maxAcceleration), timeoutMs);
+        driveSystemLeftMasterTalon.configMotionCruiseVelocity(DriveSystem.feetPerSecToEncoderUnits(DriveSystem.enforcedLowGearTopSpeedFeet), timeoutMs); 
+        driveSystemLeftMasterTalon.configMotionAcceleration(DriveSystem.feetPerSecToEncoderUnits(DriveSystem.maxLowGearAcceleration), timeoutMs);
         
         
         
@@ -95,8 +95,8 @@ public class RobotMap {
         driveSystemRightMasterTalon.config_kI(1, 0, timeoutMs);
         driveSystemRightMasterTalon.config_kD(1, 0, timeoutMs);
 		
-        driveSystemRightMasterTalon.configMotionCruiseVelocity(DriveSystem.feetPerSecToEncoderUnits(DriveSystem.maxVelocity), timeoutMs); 
-        driveSystemRightMasterTalon.configMotionAcceleration(DriveSystem.feetPerSecToEncoderUnits(DriveSystem.maxAcceleration), timeoutMs);
+        driveSystemRightMasterTalon.configMotionCruiseVelocity(DriveSystem.feetPerSecToEncoderUnits(DriveSystem.enforcedLowGearTopSpeed), timeoutMs); 
+        driveSystemRightMasterTalon.configMotionAcceleration(DriveSystem.feetPerSecToEncoderUnits(DriveSystem.maxLowGearAcceleration), timeoutMs);
         
         driveSystemRightSlaveTalon = new WPI_TalonSRX(4);
         driveSystemRightSlaveTalon.set(ControlMode.Follower, driveSystemRightMasterTalon.getDeviceID());
