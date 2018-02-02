@@ -61,8 +61,8 @@ public class DriveSystem extends Subsystem {
     public Gear currentGear = Gear.LowGear;
     
     
-    public LinkedList<Integer> leftSideVelocityBuffer;
-    public LinkedList<Integer> rightSideVelocityBuffer;
+    public LinkedList<Integer> leftSideVelocityBuffer = new LinkedList<Integer>();
+    public LinkedList<Integer> rightSideVelocityBuffer = new LinkedList<Integer>();
     public int leftSideAverageSpeedEncoder;
     public int rightSideAverageSpeedEncoder;
     
