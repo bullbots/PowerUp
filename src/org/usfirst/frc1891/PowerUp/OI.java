@@ -87,13 +87,13 @@ public class OI {
     
     public double getThrottle() {
 //    	return throttleStick.getRawAxis(1); // Two Sticks
-    	return cube(throttleStick.getRawAxis(1) * 1.28); // Gamecube
+    	return cube(throttleStick.getRawAxis(1)); // X-Box
 //    	return throttleStick.getRawAxis(1); // Brennen's mess
     }
     
     public double getTurning() {
-//    	return -turningStick.getRawAxis(0); // Two Sticks
-    	return square(-throttleStick.getRawAxis(5) * 1.28);	// Gamecube
+//    	return turningStick.getRawAxis(4); // Two Sticks
+    	return square(throttleStick.getRawAxis(4));	// X-Box
 //    	if (Math.abs(throttleStick.getRawAxis(2)) > 0.2) return -throttleStick.getRawAxis(2); // Brennen's mess
 //    	else return -throttleStick.getRawAxis(0);
     }
@@ -101,19 +101,19 @@ public class OI {
     public boolean getQuickTurn() {
 //    	return turningStick.getRawButton(2); // Two Sticks
 //    	return throttleStick.getRawButton(8); //Brock's Gamecube
-    	return throttleStick.getRawButton(6); // Normal People Gamecube
+    	return throttleStick.getRawButton(10); // X-Box
 //    	if (Math.abs(throttleStick.getRawAxis(2)) > 0.2) return true; // Brennen's mess
 //    	else return false;
     }
     
     public boolean getLowGear() {
-    	return throttleStick.getRawButton(1); // GameCube
+    	return throttleStick.getRawButton(3); // X-Box
 //    	return throttleStick.getRawButton(2); // Two Sticks
 //    	return throttleStick.getRawButton(6); // Brennen's mess
     }
     
     public boolean getHighGear() {
-    	return throttleStick.getRawButton(4); // GameCube
+    	return throttleStick.getRawButton(4); // X-Box
 //    	return turningStick.getRawButton(3); // Two Sticks
 //    	return throttleStick.getRawButton(5); // Brennen's mess
     }
