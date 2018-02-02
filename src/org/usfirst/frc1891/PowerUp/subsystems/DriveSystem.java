@@ -11,6 +11,8 @@
 
 package org.usfirst.frc1891.PowerUp.subsystems;
 
+import java.util.LinkedList;
+
 import org.usfirst.frc1891.PowerUp.RobotMap;
 import org.usfirst.frc1891.PowerUp.commands.*;
 
@@ -51,12 +53,18 @@ public class DriveSystem extends Subsystem {
     
     private DoubleSolenoid shifter;
     
-    private boolean doAutoShift = true;
-    private boolean wantsLowGear = false;
+    private boolean doAutoShift = false;
+    private boolean wantsLowGear = true;
     private boolean wantsHighGear = false;
     private boolean inMotionMagicMode = false;
     
     public Gear currentGear = Gear.LowGear;
+    
+    
+    public LinkedList<Integer> leftSideVelocityBuffer;
+    public LinkedList<Integer> rightSideVelocityBuffer;
+    public int leftSideAverageSpeedEncoder;
+    public int rightSideAverageSpeedEncoder;
     
     // DriveTrain Constant values
     public static final int leftSideLowGearTopSpeed = 12041;
@@ -119,6 +127,28 @@ public class DriveSystem extends Subsystem {
     	else {
     		printTimerCount++;
     	}
+    	
+    	if (leftSideVelocityBuffer.size() == 20 && rightSideVelocityBuffer.size() == 20) {
+    		leftSideVelocityBuffer.removeLast();
+    		leftSideVelocityBuffer.addFirst(leftMasterTalon.getSelectedSensorVelocity(0));
+    		leftSideAverageSpeedEncoder = 0;
+    		for (int i : leftSideVelocityBuffer) {
+    			leftSideAverageSpeedEncoder += i;
+    		}
+    		leftSideAverageSpeedEncoder /= 20;
+    		
+    		rightSideVelocityBuffer.removeLast();
+    		rightSideVelocityBuffer.addFirst(rightMasterTalon.getSelectedSensorVelocity(0));
+    		rightSideAverageSpeedEncoder = 0;
+    		for (int i : rightSideVelocityBuffer) {
+    			rightSideAverageSpeedEncoder += i;
+    		}
+    		rightSideAverageSpeedEncoder /= 20;
+    	}
+    	else {
+    		leftSideVelocityBuffer.addFirst(leftMasterTalon.getSelectedSensorVelocity(0));
+    		rightSideVelocityBuffer.addFirst(rightMasterTalon.getSelectedSensorVelocity(0));
+    	}
 //    	publishTopSpeed();
     }
 
@@ -169,8 +199,8 @@ public class DriveSystem extends Subsystem {
     	}
     	else {
 	    	if (doAutoShift) {
-	    		double currentLeftSpeed = Math.abs(encoderUnitsToFeetPerSec(leftMasterTalon.getSelectedSensorVelocity(0)));
-	    		double currentRightSpeed = Math.abs(encoderUnitsToFeetPerSec(rightMasterTalon.getSelectedSensorVelocity(0)));
+	    		double currentLeftSpeed = Math.abs(encoderUnitsToFeetPerSec(leftSideAverageSpeedEncoder));
+	    		double currentRightSpeed = Math.abs(encoderUnitsToFeetPerSec(rightSideAverageSpeedEncoder));
 	    		if (wantsLowGear) {
 	    			setGear(Gear.LowGear);
 	    		}
@@ -233,8 +263,8 @@ public class DriveSystem extends Subsystem {
 
     // Debug Methods
     public void publishVelocityToShuffleBoard() {
-    	SmartDashboard.putNumber("Left Side Velocity", encoderUnitsToFeetPerSec(leftMasterTalon.getSelectedSensorVelocity(0)) / 5);
-    	SmartDashboard.putNumber("Right Side Velocity", encoderUnitsToFeetPerSec(rightMasterTalon.getSelectedSensorVelocity(0)) / 5);
+    	SmartDashboard.putNumber("Left Side Velocity", encoderUnitsToFeetPerSec(leftMasterTalon.getSelectedSensorVelocity(0)));
+    	SmartDashboard.putNumber("Right Side Velocity", encoderUnitsToFeetPerSec(rightMasterTalon.getSelectedSensorVelocity(0)));
     }
     
     public void publishTopSpeed() {

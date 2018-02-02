@@ -125,8 +125,6 @@ public class Robot extends TimedRobot {
 //    	else {
 //    		compressor.setClosedLoopControl(true);
 //    	}
-    	System.out.println("Throttle: " + oi.getThrottle());
-    	System.out.println("Turning: " + oi.getTurning());
         Scheduler.getInstance().run();
     }
 }
