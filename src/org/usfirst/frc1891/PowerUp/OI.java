@@ -93,7 +93,7 @@ public class OI {
     
     public double getTurning() {
 //    	return turningStick.getRawAxis(4); // Two Sticks
-    	return square(throttleStick.getRawAxis(4));	// X-Box
+    	return square(-throttleStick.getRawAxis(4));	// X-Box
 //    	if (Math.abs(throttleStick.getRawAxis(2)) > 0.2) return -throttleStick.getRawAxis(2); // Brennen's mess
 //    	else return -throttleStick.getRawAxis(0);
     }
