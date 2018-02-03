@@ -86,14 +86,15 @@ public class DriveSystem extends Subsystem {
 	public static final double wheelDiameterFeet = 0.5;
 	public static final double encoderRevsPerWheelRev = 7.5;
 	
-	private static final double allowableError = 0.1;
+	private static final double allowableError = 200;
 	
-	public static double maxLowGearAcceleration = 0;
+	public static int maxLowGearAcceleration = enforcedLowGearTopSpeed / 2;
 	
 	// fields used for debug
 	public int printTimerCount = 0;
     private int topLeft;
     private int topRight;
+	public int motionMagicSetPoint;
 	
 	
 	public DriveSystem() {
@@ -161,6 +162,8 @@ public class DriveSystem extends Subsystem {
     	if (value) {
 	    	leftMasterTalon.set(ControlMode.MotionMagic, 0);
 	    	rightMasterTalon.set(ControlMode.MotionMagic, 0);
+	    	leftMasterTalon.selectProfileSlot(2, 0);
+	    	rightMasterTalon.selectProfileSlot(2, 0);
 	    	inMotionMagicMode = true;
 	    	setGear(Gear.LowGear);
     	}
@@ -170,14 +173,23 @@ public class DriveSystem extends Subsystem {
     }
     
     public void setMotionMagicTargetFt(double targetFt) {
-    	leftMasterTalon.set(ControlMode.MotionMagic, feetPerSecToEncoderUnits(targetFt));
-    	rightMasterTalon.set(ControlMode.MotionMagic, feetPerSecToEncoderUnits(targetFt));
+    	motionMagicSetPoint = feetToEncoderUnits(targetFt);
+    	leftMasterTalon.set(ControlMode.MotionMagic, motionMagicSetPoint);
+    	rightMasterTalon.set(ControlMode.MotionMagic, motionMagicSetPoint);
     }
 
     public boolean hasReachedMotionTarget() {
-    	int leftErrorAbs = Math.abs(leftMasterTalon.getClosedLoopError(0));
-    	int rightErrorAbs = Math.abs(rightMasterTalon.getClosedLoopError(0));
+    	int leftErrorAbs = Math.abs(motionMagicSetPoint - leftMasterTalon.getSelectedSensorPosition(0));
+    	int rightErrorAbs = Math.abs(motionMagicSetPoint - rightMasterTalon.getSelectedSensorPosition(0));
     	return (leftErrorAbs < allowableError) && (rightErrorAbs < allowableError);
+    }
+    
+    public double getLeftError() {
+    	return leftMasterTalon.getClosedLoopError(0);
+    }
+    
+    public double getRightError() {
+    	return rightMasterTalon.getClosedLoopError(0);
     }
     
     // Normal Drive Control Methods
@@ -241,6 +253,14 @@ public class DriveSystem extends Subsystem {
     	return (int) (((encoderRevsPerWheelRev * feetPerSec) / (wheelDiameterFeet * Math.PI)) * 4096) / 10;
     }
     
+    public static double encoderUnitsToFeet(int encoderUnits) {
+    	return (((encoderUnits) / 4096) / encoderRevsPerWheelRev) * (wheelDiameterFeet * Math.PI);
+    }
+    
+    public static int feetToEncoderUnits(double feetPerSec) {
+    	return (int) (((encoderRevsPerWheelRev * feetPerSec) / (wheelDiameterFeet * Math.PI)) * 4096);
+    }
+    
     private void setGear(Gear value) {
     	if (value == Gear.LowGear && currentGear != Gear.LowGear) {
     		shifter.set(Value.kForward);
@@ -257,8 +277,8 @@ public class DriveSystem extends Subsystem {
     }
 
     public void zeroEncoderPosition() {
-    	leftMasterTalon.setSelectedSensorPosition(0, 1, RobotMap.timeoutMs);
-    	rightMasterTalon.setSelectedSensorPosition(0, 1, RobotMap.timeoutMs);
+    	leftMasterTalon.setSelectedSensorPosition(0, 0, RobotMap.timeoutMs);
+    	rightMasterTalon.setSelectedSensorPosition(0, 0, RobotMap.timeoutMs);
     }
 
     // Debug Methods

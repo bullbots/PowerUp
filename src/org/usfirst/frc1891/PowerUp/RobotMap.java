@@ -50,7 +50,7 @@ public class RobotMap {
         driveSystemLeftMasterTalon.set(ControlMode.PercentOutput, 0);
         driveSystemLeftMasterTalon.setInverted(false);
         driveSystemLeftMasterTalon.setSensorPhase(true);
-        driveSystemLeftMasterTalon.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Absolute, 0, timeoutMs);
+        driveSystemLeftMasterTalon.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, 0, timeoutMs);
         
         driveSystemLeftMasterTalon.configNominalOutputForward(0, timeoutMs);
         driveSystemLeftMasterTalon.configNominalOutputReverse(0, timeoutMs);
@@ -70,8 +70,13 @@ public class RobotMap {
         driveSystemLeftMasterTalon.config_kI(1, 0, timeoutMs);
         driveSystemLeftMasterTalon.config_kD(1, 0, timeoutMs);
         
-        driveSystemLeftMasterTalon.configMotionCruiseVelocity(DriveSystem.feetPerSecToEncoderUnits(DriveSystem.enforcedLowGearTopSpeedFeet), timeoutMs); 
-        driveSystemLeftMasterTalon.configMotionAcceleration(DriveSystem.feetPerSecToEncoderUnits(DriveSystem.maxLowGearAcceleration), timeoutMs);
+        driveSystemLeftMasterTalon.config_kF(2, 0.08497, timeoutMs);
+        driveSystemLeftMasterTalon.config_kP(2, 0, timeoutMs);
+        driveSystemLeftMasterTalon.config_kI(2, 0, timeoutMs);
+        driveSystemLeftMasterTalon.config_kD(2, 0, timeoutMs);
+        
+        driveSystemLeftMasterTalon.configMotionCruiseVelocity(DriveSystem.enforcedLowGearTopSpeed, timeoutMs); 
+        driveSystemLeftMasterTalon.configMotionAcceleration(DriveSystem.maxLowGearAcceleration, timeoutMs);
         
         
         
@@ -84,7 +89,7 @@ public class RobotMap {
         driveSystemRightMasterTalon.set(ControlMode.PercentOutput, 0);
         driveSystemRightMasterTalon.setInverted(true); // Inverted because right side at normal polarity goes backwards
         driveSystemRightMasterTalon.setSensorPhase(true);
-        driveSystemRightMasterTalon.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Absolute, 0, timeoutMs);
+        driveSystemRightMasterTalon.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, 0, timeoutMs);
 
         driveSystemRightMasterTalon.configNominalOutputForward(0, timeoutMs);
         driveSystemRightMasterTalon.configNominalOutputReverse(0, timeoutMs);
@@ -103,9 +108,14 @@ public class RobotMap {
         driveSystemRightMasterTalon.config_kP(1, 0, timeoutMs);
         driveSystemRightMasterTalon.config_kI(1, 0, timeoutMs);
         driveSystemRightMasterTalon.config_kD(1, 0, timeoutMs);
+        
+        driveSystemRightMasterTalon.config_kF(2, 0.09, timeoutMs);
+        driveSystemRightMasterTalon.config_kP(2, 0, timeoutMs);
+        driveSystemRightMasterTalon.config_kI(2, 0, timeoutMs);
+        driveSystemRightMasterTalon.config_kD(2, 0, timeoutMs);
 		
-        driveSystemRightMasterTalon.configMotionCruiseVelocity(DriveSystem.feetPerSecToEncoderUnits(DriveSystem.enforcedLowGearTopSpeed), timeoutMs); 
-        driveSystemRightMasterTalon.configMotionAcceleration(DriveSystem.feetPerSecToEncoderUnits(DriveSystem.maxLowGearAcceleration), timeoutMs);
+        driveSystemRightMasterTalon.configMotionCruiseVelocity(DriveSystem.enforcedLowGearTopSpeed, timeoutMs); 
+        driveSystemRightMasterTalon.configMotionAcceleration(DriveSystem.maxLowGearAcceleration, timeoutMs);
         
         driveSystemRightSlaveTalon = new WPI_TalonSRX(4);
         driveSystemRightSlaveTalon.set(ControlMode.Follower, driveSystemRightMasterTalon.getDeviceID());
