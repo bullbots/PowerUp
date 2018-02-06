@@ -53,18 +53,39 @@ public class DriveSystem extends Subsystem {
     
     private DoubleSolenoid shifter;
     
+    /**
+     * Variable to keep track of how the driver wants shifting to be controlled.
+     */
     private boolean doAutoShift = false;
+    /**
+     * Set when we want to change gears, gear change decision made based off of this. 
+     * Low gear gets priority when both wantsLowGear and wantsHighGear are true.
+     */
     private boolean wantsLowGear = true;
+    /**
+     * Set when we want to change gears, gear change decision made based off of this. 
+     * Low gear gets priority when both wantsLowGear and wantsHighGear are true.
+     */
     private boolean wantsHighGear = false;
+    /**
+     * State Variable for position control of drivetrain for auto driving (using the motion magic mode on
+     * TalonSRXs) versus normal operator control.
+     */
     private boolean inMotionMagicMode = false;
     
+    /**
+     * State Variable for current physical gearing.
+     */
     public Gear currentGear = Gear.LowGear;
     
     
-    public LinkedList<Integer> leftSideVelocityBuffer = new LinkedList<Integer>();
-    public LinkedList<Integer> rightSideVelocityBuffer = new LinkedList<Integer>();
-    public int leftSideAverageSpeedEncoder;
-    public int rightSideAverageSpeedEncoder;
+    /*
+     * Members used to determine average speed of either side of drive. Used for autoshifting.
+     */
+    private LinkedList<Integer> leftSideVelocityBuffer = new LinkedList<Integer>();
+    private LinkedList<Integer> rightSideVelocityBuffer = new LinkedList<Integer>();
+    private int leftSideAverageSpeedEncoder;
+    private int rightSideAverageSpeedEncoder;
     
     // DriveTrain Constant values
     public static final int leftSideLowGearTopSpeed = 12041;
@@ -88,7 +109,7 @@ public class DriveSystem extends Subsystem {
 	
 	private static final double allowableError = 200;
 	
-	public static int maxLowGearAcceleration = enforcedLowGearTopSpeed / 2;
+	public static final int maxLowGearAcceleration = enforcedLowGearTopSpeed / 2;
 	
 	// fields used for debug
 	public int printTimerCount = 0;
@@ -120,7 +141,8 @@ public class DriveSystem extends Subsystem {
 
     @Override
     public void periodic() {
-        // Put code here to be run every loop
+        
+    	// Every 10 loops output debug info and desired driver info.
     	if (printTimerCount >= 10) {
     		publishVelocityToShuffleBoard();
     		printTimerCount = 0;
@@ -129,17 +151,27 @@ public class DriveSystem extends Subsystem {
     		printTimerCount++;
     	}
     	
+    	// Calculates average velocities
+    	
+    	// If the buffers are full, do the calculations otherwise, just keep filling them.
     	if (leftSideVelocityBuffer.size() == 20 && rightSideVelocityBuffer.size() == 20) {
+    		
+    		// Using buffer as a queue, remove oldest measurement and add newest.
     		leftSideVelocityBuffer.removeLast();
     		leftSideVelocityBuffer.addFirst(leftMasterTalon.getSelectedSensorVelocity(0));
+    		
+    		// Calculate the average
     		leftSideAverageSpeedEncoder = 0;
     		for (int i : leftSideVelocityBuffer) {
     			leftSideAverageSpeedEncoder += i;
     		}
     		leftSideAverageSpeedEncoder /= 20;
     		
+    		// Using buffer as a queue, remove oldest measurement and add newest.
     		rightSideVelocityBuffer.removeLast();
     		rightSideVelocityBuffer.addFirst(rightMasterTalon.getSelectedSensorVelocity(0));
+    		
+    		// Calculate the average
     		rightSideAverageSpeedEncoder = 0;
     		for (int i : rightSideVelocityBuffer) {
     			rightSideAverageSpeedEncoder += i;
@@ -158,26 +190,45 @@ public class DriveSystem extends Subsystem {
     
     
     // Motion Magic Control Methods
+    /**
+     * Called when setting up for auto movement. Changes drive train state, 
+     * cannot drive with drive() method when set true
+     * @param value Whether or not we should be in motion magic mode.
+     */
     public void setMotionMagicMode(boolean value) {
     	if (value) {
+    		// Changing Talon mode
 	    	leftMasterTalon.set(ControlMode.MotionMagic, 0);
 	    	rightMasterTalon.set(ControlMode.MotionMagic, 0);
+	    	// Changing to motion magic PID profile
 	    	leftMasterTalon.selectProfileSlot(2, 0);
 	    	rightMasterTalon.selectProfileSlot(2, 0);
+	    	// Update state
 	    	inMotionMagicMode = true;
+	    	// Currently only using lowGear for auto movement. Will require more complexety to change.
 	    	setGear(Gear.LowGear);
     	}
 	    else {
+	    	// Update state
 	    	inMotionMagicMode = false;
 	    }
     }
     
+    /**
+     * Feed the talons a target distance to travel in feet. Can be called every loop, maybe has to been, IDK.
+     * Before starting a movement, setMotionMagicMode() and zeroEncoderPosition() should be called to ensure proper functioning.
+     * @param targetFt Position to be traveled to in feet
+     */
     public void setMotionMagicTargetFt(double targetFt) {
     	motionMagicSetPoint = feetToEncoderUnits(targetFt);
     	leftMasterTalon.set(ControlMode.MotionMagic, motionMagicSetPoint);
     	rightMasterTalon.set(ControlMode.MotionMagic, motionMagicSetPoint);
     }
 
+    /**
+     * Returns true when motion has completed and drive train is stopped.
+     * @return true when done.
+     */
     public boolean hasReachedMotionTarget() {
     	int leftErrorAbs = Math.abs(motionMagicSetPoint - leftMasterTalon.getSelectedSensorPosition(0));
     	int rightErrorAbs = Math.abs(motionMagicSetPoint - rightMasterTalon.getSelectedSensorPosition(0));
@@ -193,37 +244,66 @@ public class DriveSystem extends Subsystem {
     }
     
     // Normal Drive Control Methods
+    /**
+     * Called to switch in and out of auto shift
+     * @param value
+     */
     public void setAutoShift(boolean value) {
     	doAutoShift = value;
     }
     
+    /**
+     * Called when low gear is wanted. Setting true guarantees change to low gear, false leaves gear in prior state.
+     * @param value
+     */
     public void setWantsLowGear(boolean value) {
     	wantsLowGear = value;
     }
     
+    /**
+     * Called when high gear is wanted. Setting true may not give high gear, as set low gear gets priority.
+     * False leaves gear in prior state.
+     * @param value
+     */
     public void setWantsHighGear(boolean value) {
     	wantsHighGear = value;
     }
 
+    /**
+     * Called every loop of operator control. Will do nothing if called in motion magic mode. 
+     * @param leftSpeed Wanted velocity for left side in feet per second.
+     * @param rightSpeed Wanted velocity for right side in feet per second.
+     */
     public void drive(double leftSpeed, double rightSpeed) {
+    	
+    	// if in motion magic mode, do nothing, complain in the console.
     	if (inMotionMagicMode) {
     		System.out.println("Error: drive method is being called during motion magic control");
     	}
     	else {
+    		// Auto shift policy versus manual
 	    	if (doAutoShift) {
+	    		// Get average speeds of motors
 	    		double currentLeftSpeed = Math.abs(encoderUnitsToFeetPerSec(leftSideAverageSpeedEncoder));
 	    		double currentRightSpeed = Math.abs(encoderUnitsToFeetPerSec(rightSideAverageSpeedEncoder));
+	    		
+	    		// wantsLowGear forces low gear for driver override.
 	    		if (wantsLowGear) {
 	    			setGear(Gear.LowGear);
 	    		}
+	    		// Shift up if both sides are above a threshold
 	    		else if (currentLeftSpeed > 5 && currentRightSpeed > 5) {
 	    			setGear(Gear.HighGear);
 	    		}
+	    		// Shift down if both sides are below a threshold
 	    		else if (currentLeftSpeed < 4 && currentRightSpeed < 4) {
 	    			setGear(Gear.LowGear);
 	    		}
+	    		// The thresholds should have distance between them to prevent rapid shifting between gears.
 	    	}
 	    	else {
+	    		// Just use outside demands to decide gearing
+	    		// Low gear has priority
 	    		if (wantsLowGear) {
 	    			setGear(Gear.LowGear);
 	    		}
@@ -232,6 +312,7 @@ public class DriveSystem extends Subsystem {
 	    		}
 	    	}
 	    	
+	    	// TODO This doesn't do anything, maybe make it do something or throw it out, IDK.
 	    	if (currentGear == Gear.LowGear) {
 		    	leftMasterTalon.set(ControlMode.Velocity, feetPerSecToEncoderUnits(leftSpeed));
 		    	rightMasterTalon.set(ControlMode.Velocity, feetPerSecToEncoderUnits(rightSpeed));
