@@ -1,6 +1,7 @@
 package org.usfirst.frc1891.PowerUp.subsystems;
 
 import org.usfirst.frc1891.PowerUp.RobotMap;
+import org.usfirst.frc1891.PowerUp.commands.LiftOperatorControl;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
@@ -28,6 +29,8 @@ public class Lift extends Subsystem {
 
     public void initDefaultCommand() {
     	
+    	setDefaultCommand(new LiftOperatorControl());
+    	
         // Set the default command for a subsystem here.
         //setDefaultCommand(new MySpecialCommand());
     }
@@ -35,19 +38,24 @@ public class Lift extends Subsystem {
     public void periodic() {
     	if (closedLoopEnabled) {
     		// TODO add closed loop junk
+    		liftMotor.set(0);
     	}
     	else {
+//    		System.out.println("Lift running");
     		if(directionLift == 1) {
+//    			System.out.println("up");
     			liftMotor.set(ControlMode.PercentOutput, 0.1);
-    			liftRachet.setAngle(90);
+    			liftRachet.setAngle(0);
     		}
     		else if(directionLift == -1) {
+//    			System.out.println("down");
     			liftMotor.set(ControlMode.PercentOutput, 0);
-    			liftRachet.setAngle(120);
+    			liftRachet.setAngle(180);
     		}
     		else {
+//    			System.out.println(directionLift);
     			liftMotor.set(ControlMode.PercentOutput, 0);
-    			liftRachet.setAngle(90);
+    			liftRachet.setAngle(0);
     		}
     	}
     }

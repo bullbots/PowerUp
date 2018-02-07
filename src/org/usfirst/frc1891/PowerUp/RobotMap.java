@@ -43,7 +43,7 @@ public class RobotMap {
 	public static final int ShifterLowPort = 1;
 	public static final int ShifterHighPort = 0;
 	
-	public static final int CameraServoPort1 = 0;
+	public static final int CameraServoPort1 = 3;// PWM port not determined
 	
 	public static WPI_TalonSRX liftMotorTalon;
 	

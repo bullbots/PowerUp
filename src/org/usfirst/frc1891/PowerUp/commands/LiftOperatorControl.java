@@ -24,8 +24,9 @@ public class LiftOperatorControl extends Command {
     	if (Robot.oi.getLiftOperatorOverride()) {
     		Robot.lift.setClosedLoopControl(false);
     		int output = 0;
-    		if (Robot.oi.getLiftControl() > 0) output = 1;
-    		else if (Robot.oi.getLiftControl() < 0) output = -1;
+//    		System.out.println(Robot.oi.getLiftControl());
+    		if (-Robot.oi.getLiftControl() > 0.2) output = 1;
+    		else if (-Robot.oi.getLiftControl() < -0.2) output = -1;
     		Robot.lift.setLiftDirection(output);
     	}
     	else {
