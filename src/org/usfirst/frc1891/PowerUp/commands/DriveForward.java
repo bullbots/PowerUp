@@ -13,6 +13,7 @@ package org.usfirst.frc1891.PowerUp.commands;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.command.Command;
 import org.usfirst.frc1891.PowerUp.Robot;
+import org.usfirst.frc1891.PowerUp.subsystems.DriveSystem.DriveTrainControlMode;
 
 /**
  *
@@ -44,25 +45,22 @@ public class DriveForward extends Command {
     // Called just before this Command runs the first time
     @Override
     protected void initialize() {
-    	Robot.driveSystem.setMotionMagicMode(true);
-    	Robot.driveSystem.zeroEncoderPosition();
+    	Robot.driveSystem.setControlMode(DriveTrainControlMode.DriveForward);
     	System.out.println("Error Left: " + Robot.driveSystem.getLeftError());
     	System.out.println("Error Right: " + Robot.driveSystem.getRightError());
-    	timer.start();
+    	Robot.driveSystem.setMotionMagicTargetFt(target);
     }
 
     // Called repeatedly when this Command is scheduled to run
     @Override
     protected void execute() {
-    	if (timer.hasPeriodPassed(0.01)) {
-    		Robot.driveSystem.setMotionMagicTargetFt(target);
-    	}
+    	
     }
 
     // Make this return true when this Command no longer needs to run execute()
     @Override
     protected boolean isFinished() {
-    	return false;
+    	return Robot.driveSystem.hasReachedMotionTarget();
 //        return Robot.driveSystem.hasReachedMotionTarget();
     }
 
@@ -70,11 +68,11 @@ public class DriveForward extends Command {
     @Override
     protected void end() {
     	System.out.println("Motion finished");
-    	System.out.println(Robot.driveSystem.motionMagicSetPoint);
+//    	System.out.println(Robot.driveSystem.motionMagicSetPoint);
     	System.out.println("Error Left: " + Robot.driveSystem.getLeftError());
     	System.out.println("Error Right: " + Robot.driveSystem.getRightError());
-    	Robot.driveSystem.setMotionMagicMode(false);
-    	Robot.driveSystem.drive(0, 0);
+    	
+    	Robot.driveSystem.stopMotion();
     }
 
     // Called when another command which requires one or more of the same

@@ -11,6 +11,7 @@
 
 package org.usfirst.frc1891.PowerUp.commands;
 import org.usfirst.frc1891.PowerUp.Robot;
+import org.usfirst.frc1891.PowerUp.subsystems.DriveSystem.Gear;
 
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.command.Command;
@@ -42,8 +43,7 @@ public class DriveForwardAuto extends Command {
     protected void initialize() {
     	shotTimer.start();
     	Robot.driveSystem.setAutoShift(false);
-    	Robot.driveSystem.setWantsLowGear(true);
-    	Robot.driveSystem.setWantsHighGear(false);
+    	Robot.driveSystem.setWantedGear(Gear.LowGear);
     }
 
     // Called repeatedly when this Command is scheduled to run
@@ -63,8 +63,6 @@ public class DriveForwardAuto extends Command {
     protected void end() {
     	Robot.driveSystem.drive(0, 0);
     	Robot.driveSystem.setAutoShift(true);
-    	Robot.driveSystem.setWantsLowGear(false);
-    	Robot.driveSystem.setWantsHighGear(false);
     }
 
     // Called when another command which requires one or more of the same
@@ -72,7 +70,5 @@ public class DriveForwardAuto extends Command {
     protected void interrupted() {
     	Robot.driveSystem.drive(0, 0);
     	Robot.driveSystem.setAutoShift(true);
-    	Robot.driveSystem.setWantsLowGear(false);
-    	Robot.driveSystem.setWantsHighGear(false);
     }
 }

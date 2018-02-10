@@ -52,12 +52,10 @@ public class JoystickDrive extends Command {
     @Override
     protected void execute() {
     	if (Robot.oi.getLowGear()) {
-    		Robot.driveSystem.setWantsLowGear(true);
-    		Robot.driveSystem.setWantsHighGear(false);
+    		Robot.driveSystem.setWantedGear(Gear.LowGear);
     	}
     	else if (Robot.oi.getHighGear()) {
-    		Robot.driveSystem.setWantsLowGear(false);
-    		Robot.driveSystem.setWantsHighGear(true);
+    		Robot.driveSystem.setWantedGear(Gear.HighGear);
     	}
     	
     	double throttleStick = Robot.oi.getThrottle();
@@ -68,7 +66,7 @@ public class JoystickDrive extends Command {
     	TankDriveSignal signal = cheesy.calculateSignal(throttleStick, turningStick, quickTurn);
     	
     	double topSpeed;
-    	if (Robot.driveSystem.currentGear == Gear.LowGear) {
+    	if (Robot.driveSystem.getCurrentGear() == Gear.LowGear) {
     		topSpeed = DriveSystem.enforcedLowGearTopSpeedFeet;
     	}
     	else {
