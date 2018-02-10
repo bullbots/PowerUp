@@ -207,7 +207,7 @@ public class DriveSystem extends Subsystem {
     		printTimerCount++;
     	}
     	
-    	navx.getAngle();
+//    	navx.getAngle();
     	
     	// Calculates average velocities
     	

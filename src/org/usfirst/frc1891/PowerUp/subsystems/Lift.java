@@ -40,6 +40,8 @@ public class Lift extends Subsystem {
 	
 	private final DigitalInput intakeBottom = RobotMap.intakeBottom;
 	private final DigitalInput stage2Bottom = RobotMap.stage2Bottom;
+	private boolean winchTimerStarted = false;
+	private boolean timeWinchStarted = false;
 	
     // Put methods for controlling this subsystem
     // here. Call these from Commands.
@@ -54,52 +56,71 @@ public class Lift extends Subsystem {
     
     public void periodic() {
     	
-    	// Winch control
-    	if (winchTimer.hasPeriodPassed(1)) {
-    		winch.stopMotor();
-    		winchTimer.stop();
-    		winchTimer.reset();
-    	}
-    	if (resetWinch) {
-    		setWinchRatchetEngaged(false);
-    		winch.set(-0.5);
-    		winchTimer.start();
-    		resetWinch = false;
-    	}
-    	if (timeWinch.hasPeriodPassed(.5)) {
-    		winch.stopMotor();
-    		timeWinch.stop();
-    		timeWinch.reset();
-    	}		
-    	if (runWinch) {
-    		setWinchRatchetEngaged(true);
-    		winch.set(0.5);
-    		timeWinch.start();
-    		runWinch = false;
-    	}
     	
-    	
-    	// Main Lift Control
-    	if (closedLoopEnabled) {
-    		// TODO add closed loop junk
-    		liftMotor.set(0);
-    	}
+	    if (resetWinch) {
+	    	liftMotor.set(0);
+	    	setWinchRatchetEngaged(false);
+	    	winch.set(-0.5);
+	    	
+	    	if (!winchTimerStarted) {
+	    		winchTimer.start();
+	    		winchTimerStarted  = true;
+	    	}
+	    	if (winchTimer.hasPeriodPassed(1)) {
+		   		winch.stopMotor();
+		   		winchTimer.stop();
+				winchTimer.reset();
+		   		winchTimerStarted = false;
+		   	}
+	    }
+	    else if (runWinch) {
+	    	liftMotor.set(0);
+	    	setWinchRatchetEngaged(true);
+	    	setLiftRatchetEngaged(false);
+	    	
+	    	if (!stage2Bottom.get()) {
+		    	winch.set(0.7);
+	    	}
+	    	else {
+	    		winch.set(0);
+	    	}
+//	    	
+//	    	if (!timeWinchStarted) {
+//	    		timeWinch.start();
+//	    		timeWinchStarted = true;
+//	    	}
+//	    	timeWinch.start();
+//	    	
+//	    	if (timeWinch.hasPeriodPassed(.5)) {
+//		   		winch.stopMotor();
+//		   		timeWinch.stop();
+//		   		timeWinch.reset();
+//	    		timeWinchStarted = false;
+//		   	}		
+	    }
     	else {
-    		// Move lift up
-    		if(directionLift == 1) {
-    			liftMotor.set(ControlMode.PercentOutput, -0.3);
-    			setLiftRatchetEngaged(true);
-    		}
-    		// Move lift down
-    		else if(directionLift == -1) {
-    			liftMotor.set(ControlMode.PercentOutput, 0);
-    			setLiftRatchetEngaged(false);
-    		}
-    		// Hold lift position
-    		else {
-    			liftMotor.set(ControlMode.PercentOutput, 0);
-    			setLiftRatchetEngaged(true);
-    		}
+	    	// Main Lift Control
+	    	if (closedLoopEnabled) {
+	    		// TODO add closed loop junk
+	    		liftMotor.set(0);
+	    	}
+	    	else {
+	    		// Move lift up
+	    		if(directionLift == 1) {
+	    			liftMotor.set(ControlMode.PercentOutput, -0.3);
+	    			setLiftRatchetEngaged(true);
+	    		}
+	    		// Move lift down
+	    		else if(directionLift == -1) {
+	    			liftMotor.set(ControlMode.PercentOutput, 0);
+	    			setLiftRatchetEngaged(false);
+	    		}
+	    		// Hold lift position
+	    		else {
+	    			liftMotor.set(ControlMode.PercentOutput, 0);
+	    			setLiftRatchetEngaged(true);
+	    		}
+	    	}
     	}
     	SmartDashboard.getBoolean("limitSwitch", intakeBottom.get());
     	SmartDashboard.getBoolean("limitSwitch", stage2Bottom.get());
@@ -119,11 +140,11 @@ public class Lift extends Subsystem {
     private void setWinchRatchetEngaged(boolean value) {
 		if (value) {
     		//Engage winchRatchet
-    		winchRatchet.setAngle(20);
+    		winchRatchet.setAngle(0);
     	}
     	else {
     		//Disengage winchRatchet
-    		winchRatchet.setAngle(0);
+    		winchRatchet.setAngle(50);
     	}
     }
     
@@ -136,9 +157,16 @@ public class Lift extends Subsystem {
     }
     public void resetWinch() {
     	resetWinch = true;
+    	runWinch = false;
     }
     public void runWinch() {
     	runWinch = true;
+    	resetWinch = false;
+    }
+    
+    public void stopWinch() {
+    	runWinch = false;
+    	resetWinch = false;
     }
 }
 

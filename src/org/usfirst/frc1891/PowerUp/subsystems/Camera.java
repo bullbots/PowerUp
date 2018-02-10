@@ -22,7 +22,7 @@ public class Camera extends Subsystem {
     public boolean isCameraUp = false;
 
 	public Camera() {
-		CameraServer.getInstance().startAutomaticCapture();
+//		CameraServer.getInstance().startAutomaticCapture();
 		
 		cameraServo = new Servo(RobotMap.CameraServoPort1);
 		DownCamera();

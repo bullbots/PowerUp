@@ -21,6 +21,18 @@ public class LiftOperatorControl extends Command {
 
     // Called repeatedly when this Command is scheduled to run
     protected void execute() {
+    	// Start climbing
+    	if (Robot.oi.getStartClimb()) {
+    		Robot.lift.runWinch();
+    	}
+    	// Reset Climber
+    	else if (Robot.oi.getResetClimb()) {
+    		Robot.lift.resetWinch();
+    	}
+    	else if (Robot.oi.getStopClimb()) {
+    		Robot.lift.stopWinch();
+    	}
+    	
     	if (Robot.oi.getLiftOperatorOverride()) {
     		Robot.lift.setClosedLoopControl(false);
     		int output = 0;
