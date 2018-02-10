@@ -8,6 +8,8 @@ import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 
 import edu.wpi.first.wpilibj.Servo;
+import edu.wpi.first.wpilibj.Spark;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.command.Subsystem;
 
 /**
@@ -16,6 +18,7 @@ import edu.wpi.first.wpilibj.command.Subsystem;
 public class Lift extends Subsystem {
 
 	private final WPI_TalonSRX liftMotor = RobotMap.liftMotorTalon;
+	private final Spark winch = RobotMap.winch;
 	
 	private final Servo liftRachet = RobotMap.liftRachetServo;
 	
@@ -23,6 +26,15 @@ public class Lift extends Subsystem {
 	
 	private int directionLift = 0;
 	
+	private boolean resetWinch = false;
+	
+	private boolean runWinch = false;
+	
+	private final Servo winchRatchet = RobotMap.winchRatchetServo;
+	
+	Timer winchTimer = new Timer();
+	
+	Timer timeWinch = new Timer();
 	
     // Put methods for controlling this subsystem
     // here. Call these from Commands.
@@ -36,27 +48,75 @@ public class Lift extends Subsystem {
     }
     
     public void periodic() {
+    	
+    	// Winch control
+    	if (winchTimer.hasPeriodPassed(1)) {
+    		winch.stopMotor();
+    		winchTimer.stop();
+    		winchTimer.reset();
+    	}
+    	if (resetWinch) {
+    		setWinchRatchetEngaged(false);
+    		winch.set(-0.5);
+    		winchTimer.start();
+    		resetWinch = false;
+    	}
+    	if (timeWinch.hasPeriodPassed(.5)) {
+    		winch.stopMotor();
+    		timeWinch.stop();
+    		timeWinch.reset();
+    	}		
+    	if (runWinch) {
+    		setWinchRatchetEngaged(true);
+    		winch.set(0.5);
+    		timeWinch.start();
+    		runWinch = false;
+    	}
+    	
+    	
+    	// Main Lift Control
     	if (closedLoopEnabled) {
     		// TODO add closed loop junk
     		liftMotor.set(0);
     	}
     	else {
-//    		System.out.println("Lift running");
+    		// Move lift up
     		if(directionLift == 1) {
-//    			System.out.println("up");
-    			liftMotor.set(ControlMode.PercentOutput, 0.1);
-    			liftRachet.setAngle(0);
+    			liftMotor.set(ControlMode.PercentOutput, -0.3);
+    			setLiftRatchetEngaged(true);
     		}
+    		// Move lift down
     		else if(directionLift == -1) {
-//    			System.out.println("down");
     			liftMotor.set(ControlMode.PercentOutput, 0);
-    			liftRachet.setAngle(180);
+    			setLiftRatchetEngaged(false);
     		}
+    		// Hold lift position
     		else {
-//    			System.out.println(directionLift);
     			liftMotor.set(ControlMode.PercentOutput, 0);
-    			liftRachet.setAngle(0);
+    			setLiftRatchetEngaged(true);
     		}
+    	}
+    }
+    
+    private void setLiftRatchetEngaged(boolean value) {
+    	if (value) {
+    		//Engage ratchet
+    		liftRachet.setAngle(90);
+    	}
+    	else {
+    		//Disengage ratchet
+    		liftRachet.setAngle(50);
+    	}
+    }
+    
+    private void setWinchRatchetEngaged(boolean value) {
+		if (value) {
+    		//Engage winchRatchet
+    		winchRatchet.setAngle(20);
+    	}
+    	else {
+    		//Disengage winchRatchet
+    		winchRatchet.setAngle(0);
     	}
     }
     
@@ -66,6 +126,12 @@ public class Lift extends Subsystem {
     
     public void setLiftDirection(int direction) {
     	 directionLift = direction;
+    }
+    public void resetWinch() {
+    	resetWinch = true;
+    }
+    public void runWinch() {
+    	runWinch = true;
     }
 }
 
