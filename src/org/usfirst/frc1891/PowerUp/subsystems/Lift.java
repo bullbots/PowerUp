@@ -7,10 +7,12 @@ import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.Servo;
 import edu.wpi.first.wpilibj.Spark;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.command.Subsystem;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 /**
  *
@@ -35,6 +37,9 @@ public class Lift extends Subsystem {
 	Timer winchTimer = new Timer();
 	
 	Timer timeWinch = new Timer();
+	
+	private final DigitalInput intakeBottom = RobotMap.intakeBottom;
+	private final DigitalInput stage2Bottom = RobotMap.stage2Bottom;
 	
     // Put methods for controlling this subsystem
     // here. Call these from Commands.
@@ -96,6 +101,8 @@ public class Lift extends Subsystem {
     			setLiftRatchetEngaged(true);
     		}
     	}
+    	SmartDashboard.getBoolean("limitSwitch", intakeBottom.get());
+    	SmartDashboard.getBoolean("limitSwitch", stage2Bottom.get());
     }
     
     private void setLiftRatchetEngaged(boolean value) {
