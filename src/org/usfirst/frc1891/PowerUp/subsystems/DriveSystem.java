@@ -21,6 +21,7 @@ import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 import edu.wpi.first.wpilibj.command.Subsystem;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
+import com.ctre.phoenix.ErrorCode;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 import com.kauailabs.navx.frc.AHRS;
@@ -149,12 +150,12 @@ public class DriveSystem extends Subsystem {
     @Override
     public void periodic() {
     	// motion magic check
-    	if (currentMode == DriveTrainControlMode.DriveForward) {
+    	if (currentMode == DriveTrainControlMode.DriveForward && motionRunning) {
         	leftMasterTalon.set(ControlMode.MotionMagic, motionMagicSetPoint);
         	rightMasterTalon.set(ControlMode.MotionMagic, motionMagicSetPoint);
     	} 
     	// Turn check
-    	else if (currentMode == DriveTrainControlMode.TurnInPlace) {
+    	else if (currentMode == DriveTrainControlMode.TurnInPlace && turnRunning) {
     		//TODO turning mode
     	}
     	else if (currentMode == DriveTrainControlMode.OperatorControl) {
@@ -201,6 +202,9 @@ public class DriveSystem extends Subsystem {
     	// Every 10 loops output debug info and desired driver info.
     	if (printTimerCount >= 10) {
     		publishVelocityToShuffleBoard();
+    		SmartDashboard.putNumber("left position: ", getLeftPosition());
+    		SmartDashboard.putNumber("right position: ", getRightPosition());
+    		
     		printTimerCount = 0;
     	}
     	else {
@@ -352,6 +356,14 @@ public class DriveSystem extends Subsystem {
     	return rightMasterTalon.getClosedLoopError(0);
     }
     
+    public double getLeftPosition() {
+    	return leftMasterTalon.getSelectedSensorPosition(0);
+    }
+    
+    public double getRightPosition() {
+    	return rightMasterTalon.getSelectedSensorPosition(0);
+    }
+    
     //====================================================
     // Auto Turn Methods
     
@@ -468,7 +480,8 @@ public class DriveSystem extends Subsystem {
 
     private void zeroEncoderPosition() {
     	leftMasterTalon.setSelectedSensorPosition(0, 0, RobotMap.timeoutMs);
-    	rightMasterTalon.setSelectedSensorPosition(0, 0, RobotMap.timeoutMs);
+    	ErrorCode code = rightMasterTalon.setSelectedSensorPosition(0, 0, RobotMap.timeoutMs);
+    	System.out.println(code);
     }
 
     //====================================================

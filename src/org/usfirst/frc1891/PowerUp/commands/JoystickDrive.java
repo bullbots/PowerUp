@@ -16,6 +16,7 @@ import org.usfirst.frc1891.PowerUp.CheesyDriveInterpreter;
 import org.usfirst.frc1891.PowerUp.Robot;
 import org.usfirst.frc1891.PowerUp.TankDriveSignal;
 import org.usfirst.frc1891.PowerUp.subsystems.DriveSystem;
+import org.usfirst.frc1891.PowerUp.subsystems.DriveSystem.DriveTrainControlMode;
 import org.usfirst.frc1891.PowerUp.subsystems.DriveSystem.Gear;
 
 /**
@@ -51,6 +52,8 @@ public class JoystickDrive extends Command {
     // Called repeatedly when this Command is scheduled to run
     @Override
     protected void execute() {
+    	Robot.driveSystem.setControlMode(DriveTrainControlMode.OperatorControl);
+    	
     	if (Robot.oi.getLowGear()) {
     		Robot.driveSystem.setWantedGear(Gear.LowGear);
     	}

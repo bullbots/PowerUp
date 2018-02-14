@@ -1,5 +1,7 @@
 package org.usfirst.frc1891.PowerUp.subsystems;
 
+import org.usfirst.frc1891.PowerUp.RobotMap;
+
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 import edu.wpi.first.wpilibj.command.Subsystem;
@@ -9,14 +11,10 @@ import edu.wpi.first.wpilibj.command.Subsystem;
  */
 public class Intake extends Subsystem {
 
-	DoubleSolenoid solenoid;
+	private final DoubleSolenoid solenoid;
 	
-	public void open() {
-		solenoid.set(Value.kForward);
-	}
-	
-	public void close() {
-		solenoid.set(Value.kOff);
+	public Intake() {
+		solenoid = new DoubleSolenoid(RobotMap.intakeSolenoidOpenPort, RobotMap.intakeSolenoidClosePort);
 	}
 	
     // Put methods for controlling this subsystem
@@ -26,5 +24,13 @@ public class Intake extends Subsystem {
         // Set the default command for a subsystem here.
         //setDefaultCommand(new MySpecialCommand());
     }
+	
+	public void open() {
+		solenoid.set(Value.kForward);
+	}
+	
+	public void close() {
+		solenoid.set(Value.kReverse);
+	}
 }
 
