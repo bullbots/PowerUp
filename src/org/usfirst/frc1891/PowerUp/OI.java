@@ -126,6 +126,14 @@ public class OI {
 //    	return throttleStick.getRawButton(5); // Brennen's mess
     }
     
+    public boolean getCloseIntake() {
+    	return false;
+    }
+    
+    public boolean getOpenIntake() {
+    	return false;
+    }
+    
     public void setRumble(double value) {
     	controller.setRumble(RumbleType.kLeftRumble, value);
     	controller.setRumble(RumbleType.kRightRumble, value);

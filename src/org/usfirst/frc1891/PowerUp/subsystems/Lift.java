@@ -107,12 +107,12 @@ public class Lift extends Subsystem {
 	    	else {
 	    		// Move lift up
 	    		if(directionLift == 1) {
-	    			liftMotor.set(ControlMode.PercentOutput, -0.3);
+	    			liftMotor.set(ControlMode.PercentOutput, -0.5);
 	    			setLiftRatchetEngaged(true);
 	    		}
 	    		// Move lift down
 	    		else if(directionLift == -1) {
-	    			liftMotor.set(ControlMode.PercentOutput, 0);
+	    			liftMotor.set(ControlMode.PercentOutput, 0.2);
 	    			setLiftRatchetEngaged(false);
 	    		}
 	    		// Hold lift position
