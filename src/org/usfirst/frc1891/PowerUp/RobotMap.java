@@ -151,6 +151,7 @@ public class RobotMap {
         
         liftRachetServo = new Servo(1);
         
+        winch = new Spark(9);
         //using the port on the SIM Motor because it is more powerful
         winchRatchetServo = new Servo(0);
         

@@ -56,7 +56,7 @@ public class Lift extends Subsystem {
     
     public void periodic() {
     	
-    	
+    	//this checks if the reset winch is called 
 	    if (resetWinch) {
 	    	liftMotor.set(0);
 	    	setWinchRatchetEngaged(false);
@@ -73,10 +73,14 @@ public class Lift extends Subsystem {
 		   		winchTimerStarted = false;
 		   	}
 	    }
+	    //This is for climbing
 	    else if (runWinch) {
+	    	//if the winch is ingaged
 	    	liftMotor.set(0);
 	    	setWinchRatchetEngaged(true);
+	    	//this is the climber
 	    	setLiftRatchetEngaged(false);
+	    	//this is the lifter
 	    	
 	    	if (!stage2Bottom.get()) {
 		    	winch.set(0.7);
