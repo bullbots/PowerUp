@@ -283,31 +283,6 @@ public class DriveSystem extends Subsystem {
     //====================================================
     // Motion Magic Control Methods
     
-    
-//    /**
-//     * Called when setting up for auto movement. Changes drive train state, 
-//     * cannot drive with drive() method when set true
-//     * @param value Whether or not we should be in motion magic mode.
-//     */
-//    public void setMotionMagicMode(boolean value) { //TODO destroy this
-//    	if (value) {
-//    		// Changing Talon mode
-//	    	leftMasterTalon.set(ControlMode.MotionMagic, 0);
-//	    	rightMasterTalon.set(ControlMode.MotionMagic, 0);
-//	    	// Changing to motion magic PID profile
-//	    	leftMasterTalon.selectProfileSlot(2, 0);
-//	    	rightMasterTalon.selectProfileSlot(2, 0);
-//	    	// Update state
-//	    	inMotionMagicMode = true;
-//	    	// Currently only using lowGear for auto movement. Will require more complexety to change.
-//	    	setGear(Gear.LowGear);
-//    	}
-//	    else {
-//	    	// Update state
-//	    	inMotionMagicMode = false;
-//	    }
-//    }
-    
     /**
      * Feed the talons a target distance to travel in feet. Can be called every loop, maybe has to been, IDK.
      * Before starting a movement, setMotionMagicMode() and zeroEncoderPosition() should be called to ensure proper functioning.
