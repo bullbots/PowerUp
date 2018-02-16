@@ -122,7 +122,7 @@ public class DriveSystem extends Subsystem {
 	public static final double wheelDiameterFeet = 0.5;
 	public static final double encoderRevsPerWheelRev = 7.5;
 	
-	private static final double allowableError = 200;
+	private static final double allowableError = 2000;
 	
 	public static final int maxLowGearAcceleration = enforcedLowGearTopSpeed / 2;
 	
@@ -205,6 +205,9 @@ public class DriveSystem extends Subsystem {
     		SmartDashboard.putNumber("left position: ", getLeftPosition());
     		SmartDashboard.putNumber("right position: ", getRightPosition());
     		
+    		SmartDashboard.putNumber("left error", getLeftError());
+    		SmartDashboard.putNumber("right error", getRightError());
+    		
     		printTimerCount = 0;
     	}
     	else {
@@ -283,13 +286,15 @@ public class DriveSystem extends Subsystem {
     //====================================================
     // Motion Magic Control Methods
     
+    // TODO concern about compressor voltage draw affecting accuracy?
+    
     /**
      * Feed the talons a target distance to travel in feet. Can be called every loop, maybe has to been, IDK.
      * Before starting a movement, setMotionMagicMode() and zeroEncoderPosition() should be called to ensure proper functioning.
      * @param targetFt Position to be traveled to in feet
      */
     public void setMotionMagicTargetFt(double targetFt) {
-    	motionMagicSetPoint = feetToEncoderUnits(targetFt);
+    	motionMagicSetPoint = -feetToEncoderUnits(targetFt);
     }
     
     public void startMotion() {
@@ -318,6 +323,8 @@ public class DriveSystem extends Subsystem {
      * @return true when done.
      */
     public boolean hasReachedMotionTarget() {
+//    	int leftErrorAbs = Math.abs(leftMasterTalon.getClosedLoopError(0));
+//    	int rightErrorAbs = Math.abs(rightMasterTalon.getClosedLoopError(0));
     	int leftErrorAbs = Math.abs(motionMagicSetPoint - leftMasterTalon.getSelectedSensorPosition(0));
     	int rightErrorAbs = Math.abs(motionMagicSetPoint - rightMasterTalon.getSelectedSensorPosition(0));
     	return (leftErrorAbs < allowableError) && (rightErrorAbs < allowableError);
@@ -337,6 +344,14 @@ public class DriveSystem extends Subsystem {
     
     public double getRightPosition() {
     	return rightMasterTalon.getSelectedSensorPosition(0);
+    }
+    
+    public double getLeftTarget() {
+    	return leftMasterTalon.getClosedLoopTarget(0);
+    }
+    
+    public double getRightTarget() {
+    	return rightMasterTalon.getClosedLoopTarget(0);
     }
     
     //====================================================

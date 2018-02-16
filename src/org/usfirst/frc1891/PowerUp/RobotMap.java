@@ -74,7 +74,7 @@ public class RobotMap {
         driveSystemLeftMasterTalon = new WPI_TalonSRX(1);// 1
         driveSystemLeftMasterTalon.set(ControlMode.PercentOutput, 0);
         driveSystemLeftMasterTalon.setInverted(false);
-        driveSystemLeftMasterTalon.setSensorPhase(true);
+        driveSystemLeftMasterTalon.setSensorPhase(false); //Practice true, Competition false
         driveSystemLeftMasterTalon.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, 0, timeoutMs);
         
         driveSystemLeftMasterTalon.configNominalOutputForward(0, timeoutMs);
@@ -86,9 +86,10 @@ public class RobotMap {
 //        driveSystemLeftMasterTalon.enableVoltageCompensation(true);
         
         driveSystemLeftMasterTalon.config_kF(0, 0.08497, timeoutMs); // calculated 0.08497, raised to 
-        driveSystemLeftMasterTalon.config_kP(0, 0, timeoutMs); // 0.005
-        driveSystemLeftMasterTalon.config_kI(0, 0, timeoutMs);
+        driveSystemLeftMasterTalon.config_kP(0, 0.005, timeoutMs); // 0.005
+        driveSystemLeftMasterTalon.config_kI(0, 0.001, timeoutMs);
         driveSystemLeftMasterTalon.config_kD(0, 0, timeoutMs);
+        driveSystemLeftMasterTalon.config_IntegralZone(0, 1000, timeoutMs);
         
         driveSystemLeftMasterTalon.config_kF(1, 0.0413, timeoutMs);
         driveSystemLeftMasterTalon.config_kP(1, 0, timeoutMs);
@@ -96,9 +97,10 @@ public class RobotMap {
         driveSystemLeftMasterTalon.config_kD(1, 0, timeoutMs);
         
         driveSystemLeftMasterTalon.config_kF(2, 0.08497, timeoutMs);
-        driveSystemLeftMasterTalon.config_kP(2, 0, timeoutMs);
-        driveSystemLeftMasterTalon.config_kI(2, 0, timeoutMs);
+        driveSystemLeftMasterTalon.config_kP(2, 0.005, timeoutMs);
+        driveSystemLeftMasterTalon.config_kI(2, 0.001, timeoutMs);
         driveSystemLeftMasterTalon.config_kD(2, 0, timeoutMs);
+        driveSystemLeftMasterTalon.config_IntegralZone(2, 1000, timeoutMs);
         
         driveSystemLeftMasterTalon.configMotionCruiseVelocity(DriveSystem.enforcedLowGearTopSpeed, timeoutMs); 
         driveSystemLeftMasterTalon.configMotionAcceleration(DriveSystem.maxLowGearAcceleration, timeoutMs);
@@ -125,9 +127,10 @@ public class RobotMap {
 //        driveSystemRightMasterTalon.enableVoltageCompensation(true);
         
         driveSystemRightMasterTalon.config_kF(0, 0.09, timeoutMs); // calculated was 0.08757 raised to 0.09 for tuning
-        driveSystemRightMasterTalon.config_kP(0, 0, timeoutMs); // 0.004
-        driveSystemRightMasterTalon.config_kI(0, 0, timeoutMs);
+        driveSystemRightMasterTalon.config_kP(0, 0.005, timeoutMs); // 0.004
+        driveSystemRightMasterTalon.config_kI(0, 0.001, timeoutMs);
         driveSystemRightMasterTalon.config_kD(0, 0, timeoutMs);
+        driveSystemRightMasterTalon.config_IntegralZone(0, 1000, timeoutMs);
         
         driveSystemRightMasterTalon.config_kF(1, 0.045, timeoutMs);
         driveSystemRightMasterTalon.config_kP(1, 0, timeoutMs);
@@ -135,9 +138,10 @@ public class RobotMap {
         driveSystemRightMasterTalon.config_kD(1, 0, timeoutMs);
         
         driveSystemRightMasterTalon.config_kF(2, 0.09, timeoutMs);
-        driveSystemRightMasterTalon.config_kP(2, 0, timeoutMs);
-        driveSystemRightMasterTalon.config_kI(2, 0, timeoutMs);
+        driveSystemRightMasterTalon.config_kP(2, 0.005, timeoutMs);
+        driveSystemRightMasterTalon.config_kI(2, 0.001, timeoutMs);
         driveSystemRightMasterTalon.config_kD(2, 0, timeoutMs);
+        driveSystemRightMasterTalon.config_IntegralZone(2, 1000, timeoutMs);
 		
         driveSystemRightMasterTalon.configMotionCruiseVelocity(DriveSystem.enforcedLowGearTopSpeed, timeoutMs); 
         driveSystemRightMasterTalon.configMotionAcceleration(DriveSystem.maxLowGearAcceleration, timeoutMs);
