@@ -93,7 +93,7 @@ public class RobotMap {
         
         driveSystemLeftMasterTalon.config_kF(0, 0.08497, timeoutMs); // calculated 0.08497, raised to 
         driveSystemLeftMasterTalon.config_kP(0, 0.005, timeoutMs); // 0.005
-        driveSystemLeftMasterTalon.config_kI(0, 0.001, timeoutMs);
+        driveSystemLeftMasterTalon.config_kI(0, 0, timeoutMs); // 0.001
         driveSystemLeftMasterTalon.config_kD(0, 0, timeoutMs);
         driveSystemLeftMasterTalon.config_IntegralZone(0, 1000, timeoutMs);
         
@@ -103,8 +103,8 @@ public class RobotMap {
         driveSystemLeftMasterTalon.config_kD(1, 0, timeoutMs);
         
         driveSystemLeftMasterTalon.config_kF(2, 0.08497, timeoutMs);
-        driveSystemLeftMasterTalon.config_kP(2, 0.005, timeoutMs);
-        driveSystemLeftMasterTalon.config_kI(2, 0.001, timeoutMs);
+        driveSystemLeftMasterTalon.config_kP(2, 0, timeoutMs);
+        driveSystemLeftMasterTalon.config_kI(2, 0, timeoutMs);
         driveSystemLeftMasterTalon.config_kD(2, 0, timeoutMs);
         driveSystemLeftMasterTalon.config_IntegralZone(2, 1000, timeoutMs);
         
@@ -118,7 +118,7 @@ public class RobotMap {
         driveSystemLeftSlaveTalon.setInverted(false);
         
         
-        driveSystemRightMasterTalon = new WPI_TalonSRX(3); //3 //TODO awkward, practice ID 4, comp bot ID 3
+        driveSystemRightMasterTalon = new WPI_TalonSRX(4); //3 //TODO awkward, practice ID 4, comp bot ID 3
         driveSystemRightMasterTalon.set(ControlMode.PercentOutput, 0);
         driveSystemRightMasterTalon.setInverted(true); // Inverted because right side at normal polarity goes backwards
         driveSystemRightMasterTalon.setSensorPhase(false);
@@ -133,8 +133,8 @@ public class RobotMap {
 //        driveSystemRightMasterTalon.enableVoltageCompensation(true);
         
         driveSystemRightMasterTalon.config_kF(0, 0.09, timeoutMs); // calculated was 0.08757 raised to 0.09 for tuning
-        driveSystemRightMasterTalon.config_kP(0, 0.005, timeoutMs); // 0.004
-        driveSystemRightMasterTalon.config_kI(0, 0.001, timeoutMs);
+        driveSystemRightMasterTalon.config_kP(0, 0.005, timeoutMs); // 0.005
+        driveSystemRightMasterTalon.config_kI(0, 0, timeoutMs);
         driveSystemRightMasterTalon.config_kD(0, 0, timeoutMs);
         driveSystemRightMasterTalon.config_IntegralZone(0, 1000, timeoutMs);
         
@@ -144,15 +144,15 @@ public class RobotMap {
         driveSystemRightMasterTalon.config_kD(1, 0, timeoutMs);
         
         driveSystemRightMasterTalon.config_kF(2, 0.09, timeoutMs);
-        driveSystemRightMasterTalon.config_kP(2, 0.005, timeoutMs);
-        driveSystemRightMasterTalon.config_kI(2, 0.001, timeoutMs);
+        driveSystemRightMasterTalon.config_kP(2, 0, timeoutMs);
+        driveSystemRightMasterTalon.config_kI(2, 0, timeoutMs);
         driveSystemRightMasterTalon.config_kD(2, 0, timeoutMs);
         driveSystemRightMasterTalon.config_IntegralZone(2, 1000, timeoutMs);
 		
         driveSystemRightMasterTalon.configMotionCruiseVelocity(DriveSystem.enforcedLowGearTopSpeed, timeoutMs); 
         driveSystemRightMasterTalon.configMotionAcceleration(DriveSystem.maxLowGearAcceleration, timeoutMs);
         
-        driveSystemRightSlaveTalon = new WPI_TalonSRX(4); //TODO awkward, practice ID 3, comp bot ID 4
+        driveSystemRightSlaveTalon = new WPI_TalonSRX(3); //TODO awkward, practice ID 3, comp bot ID 4
         driveSystemRightSlaveTalon.set(ControlMode.Follower, driveSystemRightMasterTalon.getDeviceID());
         driveSystemRightSlaveTalon.setInverted(true); // Inverted because right side at normal polarity goes backwards
         

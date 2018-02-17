@@ -132,7 +132,8 @@ public class DriveSystem extends Subsystem {
 	
 	public static final int maxLowGearAcceleration = enforcedLowGearTopSpeed / 2;
 	
-	
+	private int leftPositionZero = 0;
+	private int rightPositionZero = 0;
 	
 	// fields used for debug
 	public int printTimerCount = 0;
@@ -185,8 +186,8 @@ public class DriveSystem extends Subsystem {
     public void periodic() {
     	// motion magic check
     	if (currentMode == DriveTrainControlMode.DriveForward && motionRunning) {
-        	leftMasterTalon.set(ControlMode.MotionMagic, motionMagicSetPoint);
-        	rightMasterTalon.set(ControlMode.MotionMagic, motionMagicSetPoint);
+        	leftMasterTalon.set(ControlMode.MotionMagic, motionMagicSetPoint + leftPositionZero);
+        	rightMasterTalon.set(ControlMode.MotionMagic, motionMagicSetPoint + rightPositionZero);
     	} 
     	// Turn check
     	else if (currentMode == DriveTrainControlMode.TurnInPlace && turnRunning) {
@@ -326,11 +327,13 @@ public class DriveSystem extends Subsystem {
     }
     
     public double getLeftPosition() {
-    	return leftMasterTalon.getSelectedSensorPosition(0);
+    	return leftMasterTalon.getSelectedSensorPosition(0) - leftPositionZero;
+//    	return leftMasterTalon.getSelectedSensorPosition(0);
     }
     
     public double getRightPosition() {
-    	return rightMasterTalon.getSelectedSensorPosition(0);
+    	return rightMasterTalon.getSelectedSensorPosition(0) - rightPositionZero;
+//    	return rightMasterTalon.getSelectedSensorPosition(0);
     }
     
     public double getLeftTarget() {
@@ -353,6 +356,10 @@ public class DriveSystem extends Subsystem {
      */
     public void setMotionMagicTargetFt(double targetFt) {
     	motionMagicSetPoint = -feetToEncoderUnits(targetFt);
+    }
+    
+    public void setMotionMagicTarget(int target) {
+    	motionMagicSetPoint = -target;
     }
     
     public void startMotion() {
@@ -383,8 +390,8 @@ public class DriveSystem extends Subsystem {
     public boolean hasReachedMotionTarget() {
 //    	int leftErrorAbs = Math.abs(leftMasterTalon.getClosedLoopError(0));
 //    	int rightErrorAbs = Math.abs(rightMasterTalon.getClosedLoopError(0));
-    	int leftErrorAbs = Math.abs(motionMagicSetPoint - leftMasterTalon.getSelectedSensorPosition(0));
-    	int rightErrorAbs = Math.abs(motionMagicSetPoint - rightMasterTalon.getSelectedSensorPosition(0));
+    	int leftErrorAbs = Math.abs(motionMagicSetPoint - (leftMasterTalon.getSelectedSensorPosition(0) - leftPositionZero));
+    	int rightErrorAbs = Math.abs(motionMagicSetPoint - (rightMasterTalon.getSelectedSensorPosition(0) - rightPositionZero));
     	return (leftErrorAbs < allowableError) && (rightErrorAbs < allowableError);
     }
     
@@ -506,9 +513,11 @@ public class DriveSystem extends Subsystem {
     }
 
     private void zeroEncoderPosition() {
-    	leftMasterTalon.setSelectedSensorPosition(0, 0, RobotMap.timeoutMs);
-    	ErrorCode code = rightMasterTalon.setSelectedSensorPosition(0, 0, RobotMap.timeoutMs);
-    	System.out.println(code);
+//    	leftMasterTalon.setSelectedSensorPosition(0, 0, RobotMap.timeoutMs);
+//    	ErrorCode code = rightMasterTalon.setSelectedSensorPosition(0, 0, RobotMap.timeoutMs);
+//    	System.out.println(code);
+    	leftPositionZero = leftMasterTalon.getSelectedSensorPosition(0);
+    	rightPositionZero = rightMasterTalon.getSelectedSensorPosition(0);
     }
 
     //====================================================
