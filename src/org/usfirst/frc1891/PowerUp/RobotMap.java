@@ -23,6 +23,7 @@ import com.kauailabs.navx.frc.AHRS;
 
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
+import edu.wpi.first.wpilibj.I2C;
 import edu.wpi.first.wpilibj.SerialPort.Port;
 import edu.wpi.first.wpilibj.Servo;
 import edu.wpi.first.wpilibj.Spark;
@@ -155,7 +156,7 @@ public class RobotMap {
         driveSystemRightSlaveTalon.set(ControlMode.Follower, driveSystemRightMasterTalon.getDeviceID());
         driveSystemRightSlaveTalon.setInverted(true); // Inverted because right side at normal polarity goes backwards
         
-        
+        ahrs = new AHRS(I2C.Port.kMXP);
 
         liftMotorTalon = new WPI_TalonSRX(5); 
         liftMotorTalon.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder, 0, timeoutMs);

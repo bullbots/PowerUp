@@ -11,6 +11,7 @@ import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.Servo;
 import edu.wpi.first.wpilibj.Spark;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.command.Subsystem;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
@@ -42,6 +43,9 @@ public class Lift extends Subsystem {
 	private final DigitalInput stage2Bottom = RobotMap.stage2Bottom;
 	private boolean winchTimerStarted = false;
 	private boolean timeWinchStarted = false;
+	private boolean liftDownwardStarting;
+	private boolean downwardTimerStarted;
+	private Timer downwardTimer = new Timer();
 	
     // Put methods for controlling this subsystem
     // here. Call these from Commands.
@@ -113,16 +117,29 @@ public class Lift extends Subsystem {
 	    		if(directionLift == 1) {
 	    			liftMotor.set(ControlMode.PercentOutput, -0.5);
 	    			setLiftRatchetEngaged(true);
+	    			downwardTimerStarted = false;
 	    		}
 	    		// Move lift down
-	    		else if(directionLift == -1) {
-	    			liftMotor.set(ControlMode.PercentOutput, 0.2);
+	    		else if(directionLift == -1 && intakeBottom.get()) {
 	    			setLiftRatchetEngaged(false);
+	    			if (!downwardTimerStarted) {
+	    				downwardTimer.start();
+	    				downwardTimerStarted = true;
+	    				liftDownwardStarting = true;
+	    			}
+	    			if (liftDownwardStarting) {
+	    				liftMotor.set(ControlMode.PercentOutput, -0.5);
+	    				liftDownwardStarting = !downwardTimer.hasPeriodPassed(0.01);
+	    			}
+	    			else {
+	    				liftMotor.set(ControlMode.PercentOutput, 0.05);
+	    			}
 	    		}
 	    		// Hold lift position
 	    		else {
 	    			liftMotor.set(ControlMode.PercentOutput, 0);
 	    			setLiftRatchetEngaged(true);
+	    			downwardTimerStarted = false;
 	    		}
 	    	}
     	}
@@ -133,11 +150,11 @@ public class Lift extends Subsystem {
     private void setLiftRatchetEngaged(boolean value) {
     	if (value) {
     		//Engage ratchet
-    		liftRachet.setAngle(90);
+    		liftRachet.setAngle(50);
     	}
     	else {
     		//Disengage ratchet
-    		liftRachet.setAngle(50);
+    		liftRachet.setAngle(90);
     	}
     }
     

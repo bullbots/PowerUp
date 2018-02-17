@@ -127,11 +127,21 @@ public class OI {
     }
     
     public boolean getCloseIntake() {
-    	return false;
+    	if (controller.getRawAxis(3) >= 0.6) {
+    		return true;
+    	}
+    	else {
+    		return false;
+    	}
     }
     
     public boolean getOpenIntake() {
-    	return false;
+    	if (controller.getRawAxis(2) >= 0.6) {
+    		return true;
+    	}
+    	else {
+    		return false;
+    	}
     }
     
     public boolean getKickBox() {

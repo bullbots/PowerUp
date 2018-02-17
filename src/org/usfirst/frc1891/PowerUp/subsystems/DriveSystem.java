@@ -163,7 +163,7 @@ public class DriveSystem extends Subsystem {
 		shifter = new DoubleSolenoid(RobotMap.ShifterLowPort, RobotMap.ShifterHighPort);
 		setGear(Gear.LowGear);
 		
-		turnController = new PIDController(0, 0, 0, new TurnSource(), new PIDOutput() {
+		turnController = new PIDController(1.0/60.0, 0, 0, new TurnSource(), new PIDOutput() {
 			public void pidWrite(double output) {
 				turndisplacement = output;
 			}
