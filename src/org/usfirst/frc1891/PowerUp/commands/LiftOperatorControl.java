@@ -29,12 +29,14 @@ public class LiftOperatorControl extends Command {
     		climbing = true;
     		Robot.lift.runWinch();
     		Robot.intake.open();
+    		Robot.intake.KickerIn();
     		System.out.println("Ehy");
     	}
     	// Reset Climber
     	else if (Robot.oi.getResetClimb()) {
     		Robot.lift.resetWinch();
     		Robot.intake.open();
+    		Robot.intake.KickerIn();
     	}
     	else if (Robot.oi.getStopClimb()) {
     		Robot.lift.stopWinch();
@@ -54,9 +56,16 @@ public class LiftOperatorControl extends Command {
     		
     		if (Robot.oi.getCloseIntake()) {
     			Robot.intake.close();
+    			if (Robot.oi.getKickBox()) {
+    				Robot.intake.KickerOut();
+    			}
+    			else {
+    				Robot.intake.KickerIn();
+    			}
     		}
     		else if (Robot.oi.getOpenIntake()) {
     			Robot.intake.open();
+    			Robot.intake.KickerIn();
     		}
     	}
     }
