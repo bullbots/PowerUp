@@ -26,6 +26,7 @@ public class Lift extends Subsystem {
 	private final Servo liftRachet = RobotMap.liftRachetServo;
 	
 	private boolean closedLoopEnabled = false;
+	private int closedLoopTarget = 0;
 	
 	private int directionLift = 0;
 	
@@ -59,6 +60,10 @@ public class Lift extends Subsystem {
     }
     
     public void periodic() {
+    	
+    	if (!intakeBottom.get()) {
+    		liftMotor.setSelectedSensorPosition(0, 0, 5);
+    	}
     	
     	//this checks if the reset winch is called 
 	    if (resetWinch) {
@@ -111,11 +116,21 @@ public class Lift extends Subsystem {
 	    	if (closedLoopEnabled) {
 	    		// TODO add closed loop junk
 	    		liftMotor.set(0);
+	    		
+//	    		if (liftMotor.getSelectedSensorPosition(0) > closedLoopTarget + 16) {
+//	    			liftMotor.set(0.7);
+//	    		}
+//	    		else if (liftMotor.getSelectedSensorPosition(0) < closedLoopTarget - 16) {
+//	    			liftMotor.set(0.05);
+//	    		}
+//	    		else {
+//	    			liftMotor.set(0);
+//	    		}
 	    	}
 	    	else {
 	    		// Move lift up
 	    		if(directionLift == 1) {
-	    			liftMotor.set(ControlMode.PercentOutput, -0.5);
+	    			liftMotor.set(ControlMode.PercentOutput, -0.9);
 	    			setLiftRatchetEngaged(true);
 	    			downwardTimerStarted = false;
 	    		}
