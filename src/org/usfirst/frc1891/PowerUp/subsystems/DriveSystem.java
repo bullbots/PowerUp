@@ -90,6 +90,7 @@ public class DriveSystem extends Subsystem {
     private boolean turnRunning = false;
     private double turnSetPoint = 0;
     private double turndisplacement = 0;
+    private LinkedList<Double> turnPosition = new LinkedList<Double>();
     private PIDController turnController;
     
     /**
@@ -164,13 +165,13 @@ public class DriveSystem extends Subsystem {
 		shifter = new DoubleSolenoid(RobotMap.ShifterLowPort, RobotMap.ShifterHighPort);
 		setGear(Gear.LowGear);
 		
-		turnController = new PIDController(1.0/60.0, 0, 0, new TurnSource(), new PIDOutput() {
+		turnController = new PIDController(300, 0, 0, new TurnSource(), new PIDOutput() {
 			public void pidWrite(double output) {
 				turndisplacement = output;
 			}
 		});
 		turnController.setInputRange(-180, 180);
-		turnController.setOutputRange(-3, 3);
+		turnController.setOutputRange(-2200, 2200);
 		turnController.setAbsoluteTolerance(3);
 		turnController.setContinuous();
 	}
@@ -191,8 +192,43 @@ public class DriveSystem extends Subsystem {
     	} 
     	// Turn check
     	else if (currentMode == DriveTrainControlMode.TurnInPlace && turnRunning) {
-    		leftMasterTalon.set(ControlMode.Velocity, turndisplacement);
-    		rightMasterTalon.set(ControlMode.Velocity, -turndisplacement);
+//    		double error = turnSetPoint - navx.getYaw();
+//    		if (error > 180) {
+//    			error = error - 360;
+//    		}
+//    		else if (error < -180) {
+//    			error = error + 360;
+//    		}
+//			turnPosition.addFirst(error);
+//    		if (turnPosition.size() > 10) {
+//    			turnPosition.removeLast();
+//    		}
+//    		for (Double d : turnPosition) {
+//    			error += d;
+//    		}
+//    		error /= turnPosition.size();
+//    		
+//    		if (error > 3 || error < -3/*navx.getYaw() < turnSetPoint - 3*/) {
+//    			turndisplacement = error * 48.8;
+//    			System.out.println("turndisplacement: " + turndisplacement);
+//    			if (turndisplacement > 2200) {
+//    				turndisplacement = 2200;
+//    			}
+//    			else if (turndisplacement < -2200) {
+//    				turndisplacement = -2200;
+//    			}
+//    		}
+//    		else {
+//    			turndisplacement = 0;
+//    		}
+    		if (printTimerCount >= 10) {
+	    		System.out.println("Setpoint: " + turnController.getSetpoint());
+	    		System.out.println("Position: " + navx.getYaw());
+	    		System.out.println("Error: " + turnController.getError());
+    		}
+    		
+    		leftMasterTalon.set(ControlMode.Velocity, -turndisplacement);
+    		rightMasterTalon.set(ControlMode.Velocity, turndisplacement);
     	}
     	else if (currentMode == DriveTrainControlMode.OperatorControl) {
     		// Auto shift policy versus manual
@@ -238,11 +274,6 @@ public class DriveSystem extends Subsystem {
     	// Every 10 loops output debug info and desired driver info.
     	if (printTimerCount >= 10) {
     		publishVelocityToShuffleBoard();
-    		SmartDashboard.putNumber("left position: ", getLeftPosition());
-    		SmartDashboard.putNumber("right position: ", getRightPosition());
-    		
-    		SmartDashboard.putNumber("left error", getLeftError());
-    		SmartDashboard.putNumber("right error", getRightError());
     		
     		printTimerCount = 0;
     	}
@@ -290,7 +321,8 @@ public class DriveSystem extends Subsystem {
     
     public void setControlMode(DriveTrainControlMode mode) {
     	if (mode == DriveTrainControlMode.OperatorControl) {
-    		
+	    	leftMasterTalon.selectProfileSlot(0, 0);
+	    	rightMasterTalon.selectProfileSlot(0, 0);
     	}
     	else if (mode == DriveTrainControlMode.DriveForward) {
     		// Changing Talon mode
@@ -305,7 +337,8 @@ public class DriveSystem extends Subsystem {
 	    	setGear(Gear.LowGear);
     	}
     	else if (mode == DriveTrainControlMode.TurnInPlace) {
-    		
+    		leftMasterTalon.selectProfileSlot(0, 0);
+	    	rightMasterTalon.selectProfileSlot(0, 0);
     	}
     	currentMode = mode;
     }
@@ -403,7 +436,14 @@ public class DriveSystem extends Subsystem {
      * @param degrees
      */
     public void setTurnTarget(double degrees) {
-    	turnSetPoint = degrees;
+    	
+    	turnSetPoint = ((degrees + navx.getYaw()) % 360);
+    	if (turnSetPoint > 180) {
+    		turnSetPoint -= 360;
+    	}
+    	else if (turnSetPoint < -180) {
+    		turnSetPoint += 360;
+    	}
     }
     
     /**
@@ -439,6 +479,14 @@ public class DriveSystem extends Subsystem {
 		return turnController.onTarget();
     }
 
+    public double getNavxReading() {
+    	return navx.getYaw();
+    }
+    
+    public double getTurnError() {
+    	return turnSetPoint - navx.getYaw();
+    }
+    
     //====================================================
     // Normal Drive Control Methods
     

@@ -80,9 +80,6 @@ public class JoystickDrive extends Command {
     	double leftSpeed = signal.leftMotor * topSpeed;
     	double rightSpeed = signal.rightMotor * topSpeed;
     	
-    	SmartDashboard.putNumber("leftSpeedTarget", leftSpeed);
-    	SmartDashboard.putNumber("rightSpeedTarget", rightSpeed);
-    	
     	Robot.driveSystem.drive(leftSpeed, rightSpeed);
     }
 

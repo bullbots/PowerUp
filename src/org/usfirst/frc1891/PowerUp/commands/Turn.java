@@ -59,14 +59,12 @@ public class Turn extends Command {
     		startup.start();
     		
 	    	Robot.driveSystem.setControlMode(DriveTrainControlMode.TurnInPlace);
-	    	System.out.println("Target: " + DriveSystem.feetToEncoderUnits(target));
-//	    	System.out.println("Position Left: " + Robot.driveSystem.getLeftPosition());
-//	    	System.out.println("Position Right: " + Robot.driveSystem.getRightPosition());
-//	    	Robot.driveSystem.setMotionMagicTargetFt(target);
-//	    	System.out.println("Position Left: " + Robot.driveSystem.getLeftPosition());
-//	    	System.out.println("Position Right: " + Robot.driveSystem.getRightPosition());
-//	    	Robot.driveSystem.startMotion();
+	    	System.out.println("Target: " + target);
 	    	Robot.driveSystem.setTurnTarget(target);
+	    	
+	    	System.out.println("Position: " + Robot.driveSystem.getNavxReading());
+	    	System.out.println("Error: " + Robot.driveSystem.getTurnError());
+	    	
 	    	Robot.driveSystem.startTurn();
 	    	hasRun = true;
     	}
@@ -87,6 +85,10 @@ public class Turn extends Command {
     	
     	Robot.driveSystem.stopTurn();
     	
+    	System.out.println("Turn finished");
+    	System.out.println("Position: " + Robot.driveSystem.getNavxReading());
+    	System.out.println("Error: " + Robot.driveSystem.getTurnError());
+    	
     	hasRun = false;
     }
 
@@ -94,7 +96,7 @@ public class Turn extends Command {
     // subsystems is scheduled to run
     @Override
     protected void interrupted() {
-    	System.out.println("Motion Interupted");
+    	System.out.println("Turn Interupted");
     	end();
     }
 }
