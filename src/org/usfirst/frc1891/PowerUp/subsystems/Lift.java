@@ -102,20 +102,9 @@ public class Lift extends Subsystem {
 	    	
 	    	if (!stage2Bottom.get()) {
 		    	winch.set(0.7);
-		    	if (!downwardTimerStarted) {
-    				downwardTimer.start();
-    				downwardTimerStarted = true;
-    				liftDownwardStarting = true;
-    			}
-    			if (liftDownwardStarting) {
-    				liftMotor.set(ControlMode.PercentOutput, -0.5);
-    				liftDownwardStarting = !downwardTimer.hasPeriodPassed(0.01);
-    			}
 	    	}
 	    	else {
 	    		winch.set(0);
-				downwardTimer.stop();
-				downwardTimer.reset();
 	    	}
 	    	
 	    	if (Robot.oi.getBuddyBarButton()) {
@@ -148,13 +137,14 @@ public class Lift extends Subsystem {
 	    		//0.01 inches per encoder tick
 	    		//100 ticks per inch
 	    		
-//	    		if (-liftMotor.getSelectedSensorPosition(0) > closedLoopTarget + 200) {
-//	    			liftMotor.set(ControlMode.PercentOutput, -0.9);
-//	    			setLiftRatchetEngaged(true);
-//	    			downwardTimerStarted = false;
-//	    		}
-//	    		else if (-liftMotor.getSelectedSensorPosition(0) < closedLoopTarget - 200 && intakeBottom.get()) {
-//	    			setLiftRatchetEngaged(false);
+	    		if (-liftMotor.getSelectedSensorPosition(0) > closedLoopTarget + 200) {
+	    			liftMotor.set(ControlMode.PercentOutput, -0.9);
+	    			setLiftRatchetEngaged(true);
+	    			downwardTimerStarted = false;
+	    		}
+	    		else if (-liftMotor.getSelectedSensorPosition(0) < closedLoopTarget - 200 && intakeBottom.get()) {
+	    			setLiftRatchetEngaged(false);
+	    			liftMotor.set(0.2);
 //	    			if (!downwardTimerStarted) {
 //	    				downwardTimer.start();
 //	    				downwardTimerStarted = true;
@@ -169,11 +159,11 @@ public class Lift extends Subsystem {
 //		    			setLiftRatchetEngaged(true);
 //		    			downwardTimerStarted = false;
 //	    			}
-//	    		}
-//	    		else {
-//	    			liftMotor.set(0);
-//	    		}
-	    		liftMotor.set(0);
+	    		}
+	    		else {
+	    			liftMotor.set(0);
+	    		}
+//	    		liftMotor.set(0);
 	    	}
 	    	else {
 	    		// Move lift up
@@ -181,32 +171,32 @@ public class Lift extends Subsystem {
 	    			liftMotor.set(ControlMode.PercentOutput, -0.9);
 	    			setLiftRatchetEngaged(true);
 	    			downwardTimerStarted = false;
-    				downwardTimer.stop();
-    				downwardTimer.reset();
+//    				downwardTimer.stop();
+//    				downwardTimer.reset();
 	    		}
 	    		// Move lift down
 	    		else if(directionLift == -1 && intakeBottom.get()) {
 	    			setLiftRatchetEngaged(false);
-	    			if (!downwardTimerStarted) {
-	    				downwardTimer.start();
-	    				downwardTimerStarted = true;
-	    				liftDownwardStarting = true;
-	    			}
-	    			if (liftDownwardStarting) {
-	    				liftMotor.set(ControlMode.PercentOutput, -0.5);
-	    				liftDownwardStarting = !downwardTimer.hasPeriodPassed(0.01);
-	    			}
-	    			else {
+//	    			if (!downwardTimerStarted) {
+//	    				downwardTimer.start();
+//	    				downwardTimerStarted = true;
+//	    				liftDownwardStarting = true;
+//	    			}
+//	    			if (liftDownwardStarting) {
+//	    				liftMotor.set(ControlMode.PercentOutput, -0.5);
+//	    				liftDownwardStarting = !downwardTimer.hasPeriodPassed(0.01);
+//	    			}
+//	    			else {
 	    				liftMotor.set(ControlMode.PercentOutput, 0.2);
-	    			}
+//	    			}
 	    		}
 	    		// Hold lift position
 	    		else {
 	    			liftMotor.set(ControlMode.PercentOutput, 0);
 	    			setLiftRatchetEngaged(true);
-	    			downwardTimerStarted = false;
-    				downwardTimer.stop();
-    				downwardTimer.reset();
+//	    			downwardTimerStarted = false;
+//    				downwardTimer.stop();
+//    				downwardTimer.reset();
 	    		}
 	    	}
     	}
