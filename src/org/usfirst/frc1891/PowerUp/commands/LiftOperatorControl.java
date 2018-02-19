@@ -52,21 +52,30 @@ public class LiftOperatorControl extends Command {
 	    	}
 	    	else {
 	    		Robot.lift.setClosedLoopControl(true);
+	    		if (Robot.oi.getScaleButton()) {
+	    			Robot.lift.setClosedLoopTarget(72);
+	    		}
+	    		else if (Robot.oi.getSwitchButton()) {
+	    			Robot.lift.setClosedLoopTarget(48);
+	    		}
+	    		else if (Robot.oi.getFloorButton()) {
+	    			Robot.lift.setClosedLoopTarget(0);
+	    		}
 	    	}
     		
     		if (Robot.oi.getCloseIntake()) {
     			Robot.intake.close();
-    			if (Robot.oi.getKickBox()) {
-    				Robot.intake.KickerOut();
-    			}
-    			else {
-    				Robot.intake.KickerIn();
-    			}
     		}
     		else if (Robot.oi.getOpenIntake()) {
     			Robot.intake.open();
     			Robot.intake.KickerIn();
     		}
+    		if (Robot.oi.getKickBox()) {
+				Robot.intake.KickerOut();
+			}
+			else {
+				Robot.intake.KickerIn();
+			}
     	}
     }
 

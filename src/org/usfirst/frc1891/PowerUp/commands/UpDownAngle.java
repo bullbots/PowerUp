@@ -19,9 +19,11 @@ public class UpDownAngle extends InstantCommand {
     protected void initialize() {
     	
     	if (Robot.camera.isCameraUp) {
+    		System.out.println("down");
     		Robot.camera.DownCamera();
     	}
     	else {
+    		System.out.println("up");
     		Robot.camera.UpCamera();
     	}
     	

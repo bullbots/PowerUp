@@ -1,5 +1,6 @@
 package org.usfirst.frc1891.PowerUp.subsystems;
 
+import org.usfirst.frc1891.PowerUp.Robot;
 import org.usfirst.frc1891.PowerUp.RobotMap;
 import org.usfirst.frc1891.PowerUp.commands.LiftOperatorControl;
 
@@ -8,9 +9,11 @@ import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 
 import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.Servo;
 import edu.wpi.first.wpilibj.Spark;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.command.Subsystem;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -47,6 +50,12 @@ public class Lift extends Subsystem {
 	private boolean liftDownwardStarting;
 	private boolean downwardTimerStarted;
 	private Timer downwardTimer = new Timer();
+	
+	private DoubleSolenoid buddyBar = new DoubleSolenoid(RobotMap.buddyBarSolenoidOutPort, RobotMap.buddyBarSolenoidInPort);
+	
+	public Lift() {
+		buddyBar.set(Value.kReverse);
+	}
 	
     // Put methods for controlling this subsystem
     // here. Call these from Commands.
@@ -93,9 +102,30 @@ public class Lift extends Subsystem {
 	    	
 	    	if (!stage2Bottom.get()) {
 		    	winch.set(0.7);
+		    	if (!downwardTimerStarted) {
+    				downwardTimer.start();
+    				downwardTimerStarted = true;
+    				liftDownwardStarting = true;
+    			}
+    			if (liftDownwardStarting) {
+    				liftMotor.set(ControlMode.PercentOutput, -0.5);
+    				liftDownwardStarting = !downwardTimer.hasPeriodPassed(0.01);
+    			}
 	    	}
 	    	else {
 	    		winch.set(0);
+				downwardTimer.stop();
+				downwardTimer.reset();
+	    	}
+	    	
+	    	if (Robot.oi.getBuddyBarButton()) {
+	    		Value state = buddyBar.get();
+	    		if (state == Value.kReverse) {
+		    		buddyBar.set(Value.kForward);	
+	    		}
+	    		else {
+	    			buddyBar.set(Value.kReverse);
+	    		}
 	    	}
 //	    	
 //	    	if (!timeWinchStarted) {
@@ -114,18 +144,36 @@ public class Lift extends Subsystem {
     	else {
 	    	// Main Lift Control
 	    	if (closedLoopEnabled) {
-	    		// TODO add closed loop junk
-	    		liftMotor.set(0);
 	    		
-//	    		if (liftMotor.getSelectedSensorPosition(0) > closedLoopTarget + 16) {
-//	    			liftMotor.set(0.7);
+	    		//0.01 inches per encoder tick
+	    		//100 ticks per inch
+	    		
+//	    		if (-liftMotor.getSelectedSensorPosition(0) > closedLoopTarget + 200) {
+//	    			liftMotor.set(ControlMode.PercentOutput, -0.9);
+//	    			setLiftRatchetEngaged(true);
+//	    			downwardTimerStarted = false;
 //	    		}
-//	    		else if (liftMotor.getSelectedSensorPosition(0) < closedLoopTarget - 16) {
-//	    			liftMotor.set(0.05);
+//	    		else if (-liftMotor.getSelectedSensorPosition(0) < closedLoopTarget - 200 && intakeBottom.get()) {
+//	    			setLiftRatchetEngaged(false);
+//	    			if (!downwardTimerStarted) {
+//	    				downwardTimer.start();
+//	    				downwardTimerStarted = true;
+//	    				liftDownwardStarting = true;
+//	    			}
+//	    			if (liftDownwardStarting) {
+//	    				liftMotor.set(ControlMode.PercentOutput, -0.5);
+//	    				liftDownwardStarting = !downwardTimer.hasPeriodPassed(0.01);
+//	    			}
+//	    			else {
+//	    				liftMotor.set(ControlMode.PercentOutput, 0);
+//		    			setLiftRatchetEngaged(true);
+//		    			downwardTimerStarted = false;
+//	    			}
 //	    		}
 //	    		else {
 //	    			liftMotor.set(0);
 //	    		}
+	    		liftMotor.set(0);
 	    	}
 	    	else {
 	    		// Move lift up
@@ -133,6 +181,8 @@ public class Lift extends Subsystem {
 	    			liftMotor.set(ControlMode.PercentOutput, -0.9);
 	    			setLiftRatchetEngaged(true);
 	    			downwardTimerStarted = false;
+    				downwardTimer.stop();
+    				downwardTimer.reset();
 	    		}
 	    		// Move lift down
 	    		else if(directionLift == -1 && intakeBottom.get()) {
@@ -147,7 +197,7 @@ public class Lift extends Subsystem {
 	    				liftDownwardStarting = !downwardTimer.hasPeriodPassed(0.01);
 	    			}
 	    			else {
-	    				liftMotor.set(ControlMode.PercentOutput, 0.05);
+	    				liftMotor.set(ControlMode.PercentOutput, 0.2);
 	    			}
 	    		}
 	    		// Hold lift position
@@ -155,6 +205,8 @@ public class Lift extends Subsystem {
 	    			liftMotor.set(ControlMode.PercentOutput, 0);
 	    			setLiftRatchetEngaged(true);
 	    			downwardTimerStarted = false;
+    				downwardTimer.stop();
+    				downwardTimer.reset();
 	    		}
 	    	}
     	}
@@ -186,6 +238,10 @@ public class Lift extends Subsystem {
     
     public void setClosedLoopControl(boolean closedLoopEnabledValue) {
     	closedLoopEnabled = closedLoopEnabledValue;
+    }
+    
+    public void setClosedLoopTarget(double targetInches) {
+    	closedLoopTarget = (int) (targetInches * 100);
     }
     
     public void setLiftDirection(int direction) {

@@ -72,7 +72,7 @@ public class OI {
         
         controller = new XboxController(0);
         
-        joystickButton1 = new JoystickButton(controller, 3);
+        joystickButton1 = new JoystickButton(operatorStick, 2);
         joystickButton1.whenPressed(new UpDownAngle());
         
 
@@ -146,7 +146,7 @@ public class OI {
     }
     
     public boolean getKickBox() {
-		return controller.getAButton();
+		return controller.getRawButton(1);
 	}
     
     public void setRumble(double value) {
@@ -162,8 +162,22 @@ public class OI {
     	return operatorStick.getRawButton(1);
     }
     
+	public boolean getScaleButton() {
+		return operatorStick.getRawButton(5);
+	}
+
+	public boolean getSwitchButton() {
+		// TODO Auto-generated method stub
+		return operatorStick.getRawButton(4);
+	}
+
+	public boolean getFloorButton() {
+		// TODO Auto-generated method stub
+		return operatorStick.getRawButton(3);
+	}
+    
     public boolean getStartClimb() {
-    	return operatorStick.getRawButton(9);
+    	return operatorStick.getRawButton(8);
     }
     
     public boolean getResetClimb() {
@@ -175,6 +189,10 @@ public class OI {
     	return operatorStick.getRawButton(10);
     }
     
+    public boolean getBuddyBarButton() {
+		return operatorStick.getRawButtonPressed(6);
+	}
+    
     private double square(double value) {
 		return (value * value) * (value / Math.abs(value));
 	}
@@ -182,6 +200,9 @@ public class OI {
     private double cube(double value) {
 		return (value * value * value);
 	}
+
+	
+
 
 	
 
