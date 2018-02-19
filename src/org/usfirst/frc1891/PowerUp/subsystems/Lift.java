@@ -45,6 +45,8 @@ public class Lift extends Subsystem {
 	
 	private final DigitalInput intakeBottom = RobotMap.intakeBottom;
 	private final DigitalInput stage2Bottom = RobotMap.stage2Bottom;
+	private final DigitalInput liftTop = RobotMap.liftTop;
+	
 	private boolean winchTimerStarted = false;
 	private boolean timeWinchStarted = false;
 	private boolean liftDownwardStarting;
@@ -52,6 +54,7 @@ public class Lift extends Subsystem {
 	private Timer downwardTimer = new Timer();
 	
 	private DoubleSolenoid buddyBar = new DoubleSolenoid(RobotMap.buddyBarSolenoidOutPort, RobotMap.buddyBarSolenoidInPort);
+	private boolean notTriggered;
 	
 	public Lift() {
 		buddyBar.set(Value.kReverse);
@@ -70,8 +73,12 @@ public class Lift extends Subsystem {
     
     public void periodic() {
     	
-    	if (!intakeBottom.get()) {
+    	if (!intakeBottom.get() && notTriggered) {
     		liftMotor.setSelectedSensorPosition(0, 0, 5);
+    		notTriggered = false;
+    	}
+    	else if (intakeBottom.get()) {
+    		notTriggered = true;
     	}
     	
     	//this checks if the reset winch is called 
@@ -137,14 +144,14 @@ public class Lift extends Subsystem {
 	    		//0.01 inches per encoder tick
 	    		//100 ticks per inch
 	    		
-	    		if (-liftMotor.getSelectedSensorPosition(0) > closedLoopTarget + 200) {
+	    		if (-liftMotor.getSelectedSensorPosition(0) < closedLoopTarget - 50 && !atTop()) {
 	    			liftMotor.set(ControlMode.PercentOutput, -0.9);
 	    			setLiftRatchetEngaged(true);
 	    			downwardTimerStarted = false;
 	    		}
-	    		else if (-liftMotor.getSelectedSensorPosition(0) < closedLoopTarget - 200 && intakeBottom.get()) {
+	    		else if (-liftMotor.getSelectedSensorPosition(0) > closedLoopTarget + 50 && !intakeAtBottom()) {
 	    			setLiftRatchetEngaged(false);
-	    			liftMotor.set(0.2);
+	    			liftMotor.set(0.6);
 //	    			if (!downwardTimerStarted) {
 //	    				downwardTimer.start();
 //	    				downwardTimerStarted = true;
@@ -202,6 +209,7 @@ public class Lift extends Subsystem {
     	}
     	SmartDashboard.getBoolean("limitSwitch", intakeBottom.get());
     	SmartDashboard.getBoolean("limitSwitch", stage2Bottom.get());
+    	SmartDashboard.putNumber("Lift Position: ", liftMotor.getSelectedSensorPosition(0));
     }
     
     private void setLiftRatchetEngaged(boolean value) {
@@ -249,6 +257,18 @@ public class Lift extends Subsystem {
     public void stopWinch() {
     	runWinch = false;
     	resetWinch = false;
+    }
+    
+    public boolean intakeAtBottom() {
+    	return !intakeBottom.get();
+    }
+    
+    public boolean secondStageAtBottom() {
+    	return stage2Bottom.get();
+    }
+    
+    public boolean atTop() {
+    	return !liftTop.get();
     }
 }
 

@@ -67,7 +67,8 @@ public class RobotMap {
 	public static DigitalInput liftPositon;
 	public static DigitalInput intakeBottom;
 	public static DigitalInput stage2Bottom;
-
+	public static DigitalInput liftTop;
+	
 	public static int intakeSolenoidClosePort = 0;
 	public static int intakeSolenoidOpenPort = 1;
 	public static int kickerSolenoidOutPort = 5;
@@ -179,6 +180,7 @@ public class RobotMap {
         
         intakeBottom = new DigitalInput(0);
         stage2Bottom = new DigitalInput(1);
+        liftTop = new DigitalInput(2);
 //        ahrs = new AHRS(Port.kMXP);
         
         pressure = new AnalogInput(0);
