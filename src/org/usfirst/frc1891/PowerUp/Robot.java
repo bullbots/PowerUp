@@ -88,6 +88,7 @@ public class Robot extends TimedRobot {
 
     @Override
     public void disabledPeriodic() {
+		SmartDashboard.putNumber("pressure", (250 * (RobotMap.pressure.getAverageVoltage() / 5.0)) - 25);
         Scheduler.getInstance().run();
     }
 
@@ -103,6 +104,7 @@ public class Robot extends TimedRobot {
      */
     @Override
     public void autonomousPeriodic() {
+		SmartDashboard.putNumber("pressure", (250 * (RobotMap.pressure.getAverageVoltage() / 5.0)) - 25);
         Scheduler.getInstance().run();
     }
 
@@ -128,6 +130,7 @@ public class Robot extends TimedRobot {
 //    	else {
 //    		compressor.setClosedLoopControl(true);
 //    	}
+		SmartDashboard.putNumber("pressure", (250 * (RobotMap.pressure.getAverageVoltage() / 5.0)) - 25);
         Scheduler.getInstance().run();
     }
 }

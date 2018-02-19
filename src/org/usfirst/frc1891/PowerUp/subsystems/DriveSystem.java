@@ -16,11 +16,13 @@ import java.util.LinkedList;
 import org.usfirst.frc1891.PowerUp.RobotMap;
 import org.usfirst.frc1891.PowerUp.commands.*;
 
+import edu.wpi.first.wpilibj.AnalogInput;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.PIDController;
 import edu.wpi.first.wpilibj.PIDOutput;
 import edu.wpi.first.wpilibj.PIDSource;
 import edu.wpi.first.wpilibj.PIDSourceType;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 import edu.wpi.first.wpilibj.command.Subsystem;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -57,6 +59,9 @@ public class DriveSystem extends Subsystem {
     private final DoubleSolenoid shifter;
     
     private final AHRS navx = RobotMap.ahrs;
+    
+    private final AnalogInput leftRangeFinder = RobotMap.leftRangeFinder;
+    private final AnalogInput rightRangeFinder = RobotMap.rightRangeFinder;
     
     private DriveTrainControlMode currentMode = DriveTrainControlMode.Stopped;
     /**
@@ -140,7 +145,14 @@ public class DriveSystem extends Subsystem {
 	public int printTimerCount = 0;
     private int topLeft;
     private int topRight;
-	
+    private double lastAngle;
+	private double targetAngle;
+	private boolean rotating;
+	private boolean rotateTimeout;
+    private PIDController operatorStraightener;
+	private double opTurnDisplacement;
+	private Timer opTurnTimer = new Timer();
+    
     private class TurnSource implements PIDSource {
 
 		@Override
@@ -174,6 +186,16 @@ public class DriveSystem extends Subsystem {
 		turnController.setOutputRange(-2200, 2200);
 		turnController.setAbsoluteTolerance(3);
 		turnController.setContinuous();
+		
+		operatorStraightener = new PIDController(300, 0, 0, new TurnSource(), new PIDOutput() {
+			public void pidWrite(double output) {
+				opTurnDisplacement = output;
+			}
+		});
+		operatorStraightener.setInputRange(-180, 180);
+		operatorStraightener.setOutputRange(-2200, 2200);
+		operatorStraightener.setAbsoluteTolerance(3);
+		operatorStraightener.setContinuous();
 	}
     
     
@@ -256,15 +278,51 @@ public class DriveSystem extends Subsystem {
 	    		setGear(wantedGear);
 	    	}
 	    	
+	    	double change = navx.getYaw() - lastAngle;
+	    	lastAngle = navx.getYaw();
+	    	
+	    	if (Math.abs(leftSpeedTarget - rightSpeedTarget) > 0) {
+	    		turndisplacement = 0;
+	    		rotating = true;
+    			rotateTimeout = false;
+	    		System.out.println("Rotating");
+		    	leftMasterTalon.set(ControlMode.Velocity, feetPerSecToEncoderUnits(leftSpeedTarget));
+		    	rightMasterTalon.set(ControlMode.Velocity, feetPerSecToEncoderUnits(rightSpeedTarget));
+    			opTurnTimer.stop();
+    			opTurnTimer.reset();
+	    	}
+	    	else {
+	    		if (rotating) {
+	    			opTurnTimer.start();
+		    		rotating = false;
+		    		rotateTimeout = true;
+			    	leftMasterTalon.set(ControlMode.Velocity, feetPerSecToEncoderUnits(leftSpeedTarget));
+			    	rightMasterTalon.set(ControlMode.Velocity, feetPerSecToEncoderUnits(rightSpeedTarget));
+		    	}
+	    		else if (rotateTimeout && opTurnTimer.hasPeriodPassed(1)) {
+	    			targetAngle = navx.getAngle();
+	    			rotateTimeout = false;
+			    	leftMasterTalon.set(ControlMode.Velocity, feetPerSecToEncoderUnits(leftSpeedTarget));
+			    	rightMasterTalon.set(ControlMode.Velocity, feetPerSecToEncoderUnits(rightSpeedTarget));
+	    		}
+	    		else if (!rotateTimeout) {
+	    			opTurnTimer.stop();
+	    			opTurnTimer.reset();
+		    		leftMasterTalon.set(ControlMode.Velocity, feetPerSecToEncoderUnits(leftSpeedTarget) - opTurnDisplacement);
+				    rightMasterTalon.set(ControlMode.Velocity, feetPerSecToEncoderUnits(rightSpeedTarget) + opTurnDisplacement);
+		    		operatorStraightener.setSetpoint(targetAngle);
+	    		}
+	    	}
+	    	
 	    	// TODO This doesn't do anything, maybe make it do something or throw it out, IDK.
-	    	if (currentGear == Gear.LowGear) {
-		    	leftMasterTalon.set(ControlMode.Velocity, feetPerSecToEncoderUnits(leftSpeedTarget));
-		    	rightMasterTalon.set(ControlMode.Velocity, feetPerSecToEncoderUnits(rightSpeedTarget));
-	    	}
-	    	else if (currentGear == Gear.HighGear) {
-		    	leftMasterTalon.set(ControlMode.Velocity, feetPerSecToEncoderUnits(leftSpeedTarget));
-		    	rightMasterTalon.set(ControlMode.Velocity, feetPerSecToEncoderUnits(rightSpeedTarget));
-	    	}
+//	    	if (currentGear == Gear.LowGear) {
+//		    	leftMasterTalon.set(ControlMode.Velocity, feetPerSecToEncoderUnits(leftSpeedTarget) - opTurnDisplacement);
+//		    	rightMasterTalon.set(ControlMode.Velocity, feetPerSecToEncoderUnits(rightSpeedTarget) + opTurnDisplacement);
+//	    	}
+//	    	else if (currentGear == Gear.HighGear) {
+//		    	leftMasterTalon.set(ControlMode.Velocity, feetPerSecToEncoderUnits(leftSpeedTarget));
+//		    	rightMasterTalon.set(ControlMode.Velocity, feetPerSecToEncoderUnits(rightSpeedTarget));
+//	    	}
     	}
     	else if(currentMode == DriveTrainControlMode.Stopped) {
     		leftMasterTalon.stopMotor();
@@ -274,6 +332,8 @@ public class DriveSystem extends Subsystem {
     	// Every 10 loops output debug info and desired driver info.
     	if (printTimerCount >= 10) {
     		publishVelocityToShuffleBoard();
+    		SmartDashboard.putNumber("Left Range", getLeftRange());
+    		SmartDashboard.putNumber("Right Range", getRightRange());
     		
     		printTimerCount = 0;
     	}
@@ -321,8 +381,11 @@ public class DriveSystem extends Subsystem {
     
     public void setControlMode(DriveTrainControlMode mode) {
     	if (mode == DriveTrainControlMode.OperatorControl) {
+    		targetAngle = navx.getAngle();
+    		operatorStraightener.setSetpoint(targetAngle);
 	    	leftMasterTalon.selectProfileSlot(0, 0);
 	    	rightMasterTalon.selectProfileSlot(0, 0);
+	    	operatorStraightener.enable();
     	}
     	else if (mode == DriveTrainControlMode.DriveForward) {
     		// Changing Talon mode
@@ -335,10 +398,12 @@ public class DriveSystem extends Subsystem {
 	    	inMotionMagicMode = true;
 	    	// Currently only using lowGear for auto movement. Will require more complexety to change.
 	    	setGear(Gear.LowGear);
+	    	operatorStraightener.disable();
     	}
     	else if (mode == DriveTrainControlMode.TurnInPlace) {
     		leftMasterTalon.selectProfileSlot(0, 0);
 	    	rightMasterTalon.selectProfileSlot(0, 0);
+	    	operatorStraightener.disable();
     	}
     	currentMode = mode;
     }
@@ -377,6 +442,16 @@ public class DriveSystem extends Subsystem {
     	return rightMasterTalon.getClosedLoopTarget(0);
     }
 
+    public double getLeftRange() {
+    	double distanceCM = leftRangeFinder.getAverageVoltage() / (5.0 / 1024.0);
+    	return distanceCM / (500.0 / 197.0); // Convert to inches
+    }
+    
+    public double getRightRange() {
+    	double distanceCM = rightRangeFinder.getAverageVoltage() / (5.0 / 1024.0);
+    	return distanceCM / (500.0 / 197.0); // Convert to inches
+    }
+    
     //====================================================
     // Motion Magic Control Methods
     
