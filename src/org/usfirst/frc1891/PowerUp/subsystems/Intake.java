@@ -28,19 +28,31 @@ public class Intake extends Subsystem {
     }
 	
 	public void open() {
-		gripperSolenoid.set(Value.kForward);
+		if (gripperSolenoid.get() != Value.kForward) {
+			gripperSolenoid.set(Value.kForward);
+		}
 	}
 	
 	public void close() {
-		gripperSolenoid.set(Value.kReverse);
+		if (gripperSolenoid.get() != Value.kReverse) {
+			gripperSolenoid.set(Value.kReverse);
+			kickerSolenoid.set(Value.kReverse);
+		}
 	}
 	
 	public void KickerOut() {
-		kickerSolenoid.set(Value.kForward);
+		if (gripperSolenoid.get() == Value.kReverse) {
+			kickerSolenoid.set(Value.kReverse);
+		}
+		else if (kickerSolenoid.get() != Value.kForward) {
+			kickerSolenoid.set(Value.kForward);
+		}
 	}
 	
 	public void KickerIn() {
-		kickerSolenoid.set(Value.kReverse);
+		if (kickerSolenoid.get() != Value.kReverse) {
+			kickerSolenoid.set(Value.kReverse);
+		}
 	}
 }
 
