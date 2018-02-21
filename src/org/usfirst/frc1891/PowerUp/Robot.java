@@ -45,6 +45,7 @@ public class Robot extends TimedRobot {
     public static Camera camera;
     public static Lift lift;
     public static Intake intake;
+    public static Lights lights;
     
     public static Compressor compressor;
     PowerDistributionPanel pdp;
@@ -66,6 +67,8 @@ public class Robot extends TimedRobot {
         compressor = new Compressor();
         
         intake = new Intake();
+        
+        lights = new Lights(0);
 
         // OI must be constructed after subsystems. If the OI creates Commands
         //(which it very likely will), subsystems are not guaranteed to be

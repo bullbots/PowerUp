@@ -506,6 +506,9 @@ public class DriveSystem extends Subsystem {
     	return (leftErrorAbs < allowableError) && (rightErrorAbs < allowableError);
     }
     
+    public boolean motionRunning() {
+    	return motionRunning;
+    }
     //====================================================
     // Auto Turn Methods
     

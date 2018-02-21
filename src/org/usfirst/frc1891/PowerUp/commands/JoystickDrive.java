@@ -55,7 +55,7 @@ public class JoystickDrive extends Command {
     // Called repeatedly when this Command is scheduled to run
     @Override
     protected void execute() {
-    	if (!hasRun) {
+    	if (!hasRun && !Robot.driveSystem.motionRunning()) {
     		System.out.println("Op control");
     		Robot.driveSystem.setControlMode(DriveTrainControlMode.OperatorControl);
     		hasRun = true;
