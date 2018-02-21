@@ -9,13 +9,12 @@ import edu.wpi.first.wpilibj.command.Command;
  */
 public class LiftOperatorControl extends Command {
 	
-	private boolean climbing = false;
+	public static boolean climbing = false;
 
     public LiftOperatorControl() {
         // Use requires() here to declare subsystem dependencies
         // eg. requires(chassis);
     	requires(Robot.lift);
-    	requires(Robot.intake);
     }
 
     // Called just before this Command runs the first time
@@ -28,15 +27,11 @@ public class LiftOperatorControl extends Command {
     	if (Robot.oi.getStartClimb()) {
     		climbing = true;
     		Robot.lift.runWinch();
-    		Robot.intake.open();
-    		Robot.intake.KickerIn();
     		System.out.println("Ehy");
     	}
     	// Reset Climber
     	else if (Robot.oi.getResetClimb()) {
     		Robot.lift.resetWinch();
-    		Robot.intake.open();
-    		Robot.intake.KickerIn();
     	}
     	else if (Robot.oi.getStopClimb()) {
     		Robot.lift.stopWinch();
@@ -63,19 +58,7 @@ public class LiftOperatorControl extends Command {
 //	    		}
 	    	}
     		
-    		if (Robot.oi.getCloseIntake()) {
-    			Robot.intake.close();
-    		}
-    		else if (Robot.oi.getOpenIntake()) {
-    			Robot.intake.open();
-    			Robot.intake.KickerIn();
-    		}
-    		if (Robot.oi.getKickBox()) {
-				Robot.intake.KickerOut();
-			}
-			else {
-				Robot.intake.KickerIn();
-			}
+    		
     	}
     }
 

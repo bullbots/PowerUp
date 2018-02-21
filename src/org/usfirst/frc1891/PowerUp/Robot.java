@@ -22,6 +22,10 @@ import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import org.usfirst.frc1891.PowerUp.commands.*;
+import org.usfirst.frc1891.PowerUp.commands.AutoModes.CrossLine;
+import org.usfirst.frc1891.PowerUp.commands.AutoModes.OneSideScale;
+import org.usfirst.frc1891.PowerUp.commands.AutoModes.OneSideSwitch;
+import org.usfirst.frc1891.PowerUp.commands.AutoModes.Side;
 import org.usfirst.frc1891.PowerUp.subsystems.*;
 
 /**
@@ -71,7 +75,10 @@ public class Robot extends TimedRobot {
 
         // Add commands to Autonomous Sendable Chooser
 
-        chooser.addDefault("Autonomous Command", new AutonomousCommand());
+        chooser.addDefault("CrossLine", new CrossLine());
+        chooser.addObject("LeftSideSwitch", new OneSideSwitch(Side.left));
+        chooser.addObject("RightSideSwitch", new OneSideSwitch(Side.right));
+        chooser.addObject("Scale", new OneSideScale(Side.right));
 
         SmartDashboard.putData("Auto mode", chooser);
     }

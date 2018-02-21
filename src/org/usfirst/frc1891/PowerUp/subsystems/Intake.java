@@ -1,6 +1,7 @@
 package org.usfirst.frc1891.PowerUp.subsystems;
 
 import org.usfirst.frc1891.PowerUp.RobotMap;
+import org.usfirst.frc1891.PowerUp.commands.IntakeOperatorControl;
 
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
@@ -25,23 +26,33 @@ public class Intake extends Subsystem {
     public void initDefaultCommand() {
         // Set the default command for a subsystem here.
         //setDefaultCommand(new MySpecialCommand());
+    	setDefaultCommand(new IntakeOperatorControl());
     }
 	
 	public void open() {
-		if (gripperSolenoid.get() != Value.kForward) {
+		if (gripperSolenoid.get() == Value.kOff) {
+			gripperSolenoid.set(Value.kForward);
+		}
+		else if (gripperSolenoid.get() != Value.kForward) {
 			gripperSolenoid.set(Value.kForward);
 		}
 	}
 	
 	public void close() {
-		if (gripperSolenoid.get() != Value.kReverse) {
+		if (gripperSolenoid.get() == Value.kOff) {
+			gripperSolenoid.set(Value.kReverse);
+		}
+		else if (gripperSolenoid.get() != Value.kReverse) {
 			gripperSolenoid.set(Value.kReverse);
 			kickerSolenoid.set(Value.kReverse);
 		}
 	}
 	
 	public void KickerOut() {
-		if (gripperSolenoid.get() == Value.kReverse) {
+		if (kickerSolenoid.get() == Value.kOff) {
+			kickerSolenoid.set(Value.kForward);
+		}
+		else if (gripperSolenoid.get() == Value.kReverse) {
 			kickerSolenoid.set(Value.kReverse);
 		}
 		else if (kickerSolenoid.get() != Value.kForward) {
@@ -50,7 +61,10 @@ public class Intake extends Subsystem {
 	}
 	
 	public void KickerIn() {
-		if (kickerSolenoid.get() != Value.kReverse) {
+		if (kickerSolenoid.get() == Value.kOff) {
+			kickerSolenoid.set(Value.kReverse);
+		}
+		else if (kickerSolenoid.get() != Value.kReverse) {
 			kickerSolenoid.set(Value.kReverse);
 		}
 	}

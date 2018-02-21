@@ -56,6 +56,7 @@ public class JoystickDrive extends Command {
     @Override
     protected void execute() {
     	if (!hasRun) {
+    		System.out.println("Op control");
     		Robot.driveSystem.setControlMode(DriveTrainControlMode.OperatorControl);
     		hasRun = true;
     	}
@@ -97,6 +98,7 @@ public class JoystickDrive extends Command {
     // Called once after isFinished returns true
     @Override
     protected void end() {
+    	hasRun = false;
     }
 
     // Called when another command which requires one or more of the same

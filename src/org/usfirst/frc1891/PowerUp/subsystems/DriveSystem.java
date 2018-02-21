@@ -285,7 +285,6 @@ public class DriveSystem extends Subsystem {
 	    		turndisplacement = 0;
 	    		rotating = true;
     			rotateTimeout = false;
-	    		System.out.println("Rotating");
 		    	leftMasterTalon.set(ControlMode.Velocity, feetPerSecToEncoderUnits(leftSpeedTarget));
 		    	rightMasterTalon.set(ControlMode.Velocity, feetPerSecToEncoderUnits(rightSpeedTarget));
     			opTurnTimer.stop();
@@ -298,9 +297,12 @@ public class DriveSystem extends Subsystem {
 		    		rotateTimeout = true;
 			    	leftMasterTalon.set(ControlMode.Velocity, feetPerSecToEncoderUnits(leftSpeedTarget));
 			    	rightMasterTalon.set(ControlMode.Velocity, feetPerSecToEncoderUnits(rightSpeedTarget));
+	    			targetAngle = navx.getAngle();
+	    			operatorStraightener.setSetpoint(targetAngle);
 		    	}
 	    		else if (rotateTimeout && opTurnTimer.hasPeriodPassed(1)) {
 	    			targetAngle = navx.getAngle();
+	    			operatorStraightener.setSetpoint(targetAngle);
 	    			rotateTimeout = false;
 			    	leftMasterTalon.set(ControlMode.Velocity, feetPerSecToEncoderUnits(leftSpeedTarget));
 			    	rightMasterTalon.set(ControlMode.Velocity, feetPerSecToEncoderUnits(rightSpeedTarget));
@@ -399,6 +401,7 @@ public class DriveSystem extends Subsystem {
 	    	// Currently only using lowGear for auto movement. Will require more complexety to change.
 	    	setGear(Gear.LowGear);
 	    	operatorStraightener.disable();
+	    	zeroEncoderPosition();
     	}
     	else if (mode == DriveTrainControlMode.TurnInPlace) {
     		leftMasterTalon.selectProfileSlot(0, 0);

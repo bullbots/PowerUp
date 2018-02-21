@@ -8,20 +8,26 @@ import edu.wpi.first.wpilibj.command.InstantCommand;
 /**
  *
  */
-public class setLiftPosition extends InstantCommand {
+public class OpenIntake extends InstantCommand {
 
-	private double target;
-	
-    public setLiftPosition(double target) {
-    	this.target = target;
+    public OpenIntake() {
         // Use requires() here to declare subsystem dependencies
         // eg. requires(chassis);
-    	requires(Robot.lift);
+    	requires(Robot.intake);
+    }
+    
+    protected void initialize() {
+    	Robot.intake.open();
     }
 
     // Called repeatedly when this Command is scheduled to run
     protected void execute() {
-    	Robot.lift.setClosedLoopControl(true);
-    	Robot.lift.setClosedLoopTarget(target);
+    	Robot.intake.open();
+    }
+
+    protected void interrupted() {
+    }
+    
+    protected void end() {
     }
 }
