@@ -1,6 +1,7 @@
 package org.usfirst.frc1891.PowerUp.subsystems;
 
 import org.usfirst.frc1891.PowerUp.RobotMap;
+import org.usfirst.frc1891.PowerUp.commands.UpDownAngle;
 import org.usfirst.frc1891.PowerUp.subsystems.DriveSystem.Gear;
 
 import edu.wpi.first.wpilibj.CameraServer;
@@ -22,7 +23,7 @@ public class Camera extends Subsystem {
     public boolean isCameraUp = false;
 
 	public Camera() {
-//		CameraServer.getInstance().startAutomaticCapture();
+		CameraServer.getInstance().startAutomaticCapture();
 		
 		cameraServo = new Servo(RobotMap.CameraServoPort1);
 		DownCamera();
@@ -31,6 +32,7 @@ public class Camera extends Subsystem {
     public void initDefaultCommand() {
         // Set the default command for a subsystem here.
         //setDefaultCommand(new MySpecialCommand());
+    	
     }
     
     public void UpCamera() {

@@ -11,10 +11,12 @@ import edu.wpi.first.wpilibj.command.Subsystem;
  */
 public class Intake extends Subsystem {
 
-	private final DoubleSolenoid solenoid;
+	private final DoubleSolenoid gripperSolenoid;
+	private final DoubleSolenoid kickerSolenoid;
 	
 	public Intake() {
-		solenoid = new DoubleSolenoid(RobotMap.intakeSolenoidOpenPort, RobotMap.intakeSolenoidClosePort);
+		gripperSolenoid = new DoubleSolenoid(RobotMap.intakeSolenoidOpenPort, RobotMap.intakeSolenoidClosePort);
+		kickerSolenoid = new DoubleSolenoid(RobotMap.kickerSolenoidOutPort, RobotMap.kickerSolenoidInPort);
 	}
 	
     // Put methods for controlling this subsystem
@@ -26,11 +28,31 @@ public class Intake extends Subsystem {
     }
 	
 	public void open() {
-		solenoid.set(Value.kForward);
+		if (gripperSolenoid.get() != Value.kForward) {
+			gripperSolenoid.set(Value.kForward);
+		}
 	}
 	
 	public void close() {
-		solenoid.set(Value.kReverse);
+		if (gripperSolenoid.get() != Value.kReverse) {
+			gripperSolenoid.set(Value.kReverse);
+			kickerSolenoid.set(Value.kReverse);
+		}
+	}
+	
+	public void KickerOut() {
+		if (gripperSolenoid.get() == Value.kReverse) {
+			kickerSolenoid.set(Value.kReverse);
+		}
+		else if (kickerSolenoid.get() != Value.kForward) {
+			kickerSolenoid.set(Value.kForward);
+		}
+	}
+	
+	public void KickerIn() {
+		if (kickerSolenoid.get() != Value.kReverse) {
+			kickerSolenoid.set(Value.kReverse);
+		}
 	}
 }
 

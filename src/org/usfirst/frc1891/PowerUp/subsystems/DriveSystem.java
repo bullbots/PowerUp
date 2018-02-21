@@ -17,6 +17,10 @@ import org.usfirst.frc1891.PowerUp.RobotMap;
 import org.usfirst.frc1891.PowerUp.commands.*;
 
 import edu.wpi.first.wpilibj.DoubleSolenoid;
+import edu.wpi.first.wpilibj.PIDController;
+import edu.wpi.first.wpilibj.PIDOutput;
+import edu.wpi.first.wpilibj.PIDSource;
+import edu.wpi.first.wpilibj.PIDSourceType;
 import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 import edu.wpi.first.wpilibj.command.Subsystem;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -85,6 +89,9 @@ public class DriveSystem extends Subsystem {
 	
     private boolean turnRunning = false;
     private double turnSetPoint = 0;
+    private double turndisplacement = 0;
+    private LinkedList<Double> turnPosition = new LinkedList<Double>();
+    private PIDController turnController;
     
     /**
      * State Variable for current physical gearing.
@@ -122,22 +129,51 @@ public class DriveSystem extends Subsystem {
 	public static final double wheelDiameterFeet = 0.5;
 	public static final double encoderRevsPerWheelRev = 7.5;
 	
-	private static final double allowableError = 200;
+	private static final double allowableError = 2000;
 	
 	public static final int maxLowGearAcceleration = enforcedLowGearTopSpeed / 2;
 	
-	
+	private int leftPositionZero = 0;
+	private int rightPositionZero = 0;
 	
 	// fields used for debug
 	public int printTimerCount = 0;
     private int topLeft;
     private int topRight;
 	
-	
+    private class TurnSource implements PIDSource {
+
+		@Override
+		public void setPIDSourceType(PIDSourceType pidSource) {
+			
+		}
+
+		@Override
+		public PIDSourceType getPIDSourceType() {
+			return PIDSourceType.kDisplacement;
+		}
+
+		@Override
+		public double pidGet() {
+			// TODO check feedback, maybe needs to be complicated
+			return navx.getYaw();
+		}
+    	
+    }
 	
 	public DriveSystem() {
 		shifter = new DoubleSolenoid(RobotMap.ShifterLowPort, RobotMap.ShifterHighPort);
 		setGear(Gear.LowGear);
+		
+		turnController = new PIDController(300, 0, 0, new TurnSource(), new PIDOutput() {
+			public void pidWrite(double output) {
+				turndisplacement = output;
+			}
+		});
+		turnController.setInputRange(-180, 180);
+		turnController.setOutputRange(-2200, 2200);
+		turnController.setAbsoluteTolerance(3);
+		turnController.setContinuous();
 	}
     
     
@@ -151,12 +187,48 @@ public class DriveSystem extends Subsystem {
     public void periodic() {
     	// motion magic check
     	if (currentMode == DriveTrainControlMode.DriveForward && motionRunning) {
-        	leftMasterTalon.set(ControlMode.MotionMagic, motionMagicSetPoint);
-        	rightMasterTalon.set(ControlMode.MotionMagic, motionMagicSetPoint);
+        	leftMasterTalon.set(ControlMode.MotionMagic, motionMagicSetPoint + leftPositionZero);
+        	rightMasterTalon.set(ControlMode.MotionMagic, motionMagicSetPoint + rightPositionZero);
     	} 
     	// Turn check
     	else if (currentMode == DriveTrainControlMode.TurnInPlace && turnRunning) {
-    		//TODO turning mode
+//    		double error = turnSetPoint - navx.getYaw();
+//    		if (error > 180) {
+//    			error = error - 360;
+//    		}
+//    		else if (error < -180) {
+//    			error = error + 360;
+//    		}
+//			turnPosition.addFirst(error);
+//    		if (turnPosition.size() > 10) {
+//    			turnPosition.removeLast();
+//    		}
+//    		for (Double d : turnPosition) {
+//    			error += d;
+//    		}
+//    		error /= turnPosition.size();
+//    		
+//    		if (error > 3 || error < -3/*navx.getYaw() < turnSetPoint - 3*/) {
+//    			turndisplacement = error * 48.8;
+//    			System.out.println("turndisplacement: " + turndisplacement);
+//    			if (turndisplacement > 2200) {
+//    				turndisplacement = 2200;
+//    			}
+//    			else if (turndisplacement < -2200) {
+//    				turndisplacement = -2200;
+//    			}
+//    		}
+//    		else {
+//    			turndisplacement = 0;
+//    		}
+    		if (printTimerCount >= 10) {
+	    		System.out.println("Setpoint: " + turnController.getSetpoint());
+	    		System.out.println("Position: " + navx.getYaw());
+	    		System.out.println("Error: " + turnController.getError());
+    		}
+    		
+    		leftMasterTalon.set(ControlMode.Velocity, -turndisplacement);
+    		rightMasterTalon.set(ControlMode.Velocity, turndisplacement);
     	}
     	else if (currentMode == DriveTrainControlMode.OperatorControl) {
     		// Auto shift policy versus manual
@@ -202,8 +274,6 @@ public class DriveSystem extends Subsystem {
     	// Every 10 loops output debug info and desired driver info.
     	if (printTimerCount >= 10) {
     		publishVelocityToShuffleBoard();
-    		SmartDashboard.putNumber("left position: ", getLeftPosition());
-    		SmartDashboard.putNumber("right position: ", getRightPosition());
     		
     		printTimerCount = 0;
     	}
@@ -251,7 +321,8 @@ public class DriveSystem extends Subsystem {
     
     public void setControlMode(DriveTrainControlMode mode) {
     	if (mode == DriveTrainControlMode.OperatorControl) {
-    		
+	    	leftMasterTalon.selectProfileSlot(0, 0);
+	    	rightMasterTalon.selectProfileSlot(0, 0);
     	}
     	else if (mode == DriveTrainControlMode.DriveForward) {
     		// Changing Talon mode
@@ -266,7 +337,8 @@ public class DriveSystem extends Subsystem {
 	    	setGear(Gear.LowGear);
     	}
     	else if (mode == DriveTrainControlMode.TurnInPlace) {
-    		
+    		leftMasterTalon.selectProfileSlot(0, 0);
+	    	rightMasterTalon.selectProfileSlot(0, 0);
     	}
     	currentMode = mode;
     }
@@ -279,34 +351,36 @@ public class DriveSystem extends Subsystem {
     	return currentGear;
     }
     
+    public double getLeftError() {
+    	return leftMasterTalon.getClosedLoopError(0);
+    }
+    
+    public double getRightError() {
+    	return rightMasterTalon.getClosedLoopError(0);
+    }
+    
+    public double getLeftPosition() {
+    	return leftMasterTalon.getSelectedSensorPosition(0) - leftPositionZero;
+//    	return leftMasterTalon.getSelectedSensorPosition(0);
+    }
+    
+    public double getRightPosition() {
+    	return rightMasterTalon.getSelectedSensorPosition(0) - rightPositionZero;
+//    	return rightMasterTalon.getSelectedSensorPosition(0);
+    }
+    
+    public double getLeftTarget() {
+    	return leftMasterTalon.getClosedLoopTarget(0);
+    }
+    
+    public double getRightTarget() {
+    	return rightMasterTalon.getClosedLoopTarget(0);
+    }
 
     //====================================================
     // Motion Magic Control Methods
     
-    
-//    /**
-//     * Called when setting up for auto movement. Changes drive train state, 
-//     * cannot drive with drive() method when set true
-//     * @param value Whether or not we should be in motion magic mode.
-//     */
-//    public void setMotionMagicMode(boolean value) { //TODO destroy this
-//    	if (value) {
-//    		// Changing Talon mode
-//	    	leftMasterTalon.set(ControlMode.MotionMagic, 0);
-//	    	rightMasterTalon.set(ControlMode.MotionMagic, 0);
-//	    	// Changing to motion magic PID profile
-//	    	leftMasterTalon.selectProfileSlot(2, 0);
-//	    	rightMasterTalon.selectProfileSlot(2, 0);
-//	    	// Update state
-//	    	inMotionMagicMode = true;
-//	    	// Currently only using lowGear for auto movement. Will require more complexety to change.
-//	    	setGear(Gear.LowGear);
-//    	}
-//	    else {
-//	    	// Update state
-//	    	inMotionMagicMode = false;
-//	    }
-//    }
+    // TODO concern about compressor voltage draw affecting accuracy?
     
     /**
      * Feed the talons a target distance to travel in feet. Can be called every loop, maybe has to been, IDK.
@@ -314,7 +388,11 @@ public class DriveSystem extends Subsystem {
      * @param targetFt Position to be traveled to in feet
      */
     public void setMotionMagicTargetFt(double targetFt) {
-    	motionMagicSetPoint = feetToEncoderUnits(targetFt);
+    	motionMagicSetPoint = -feetToEncoderUnits(targetFt);
+    }
+    
+    public void setMotionMagicTarget(int target) {
+    	motionMagicSetPoint = -target;
     }
     
     public void startMotion() {
@@ -343,25 +421,11 @@ public class DriveSystem extends Subsystem {
      * @return true when done.
      */
     public boolean hasReachedMotionTarget() {
-    	int leftErrorAbs = Math.abs(motionMagicSetPoint - leftMasterTalon.getSelectedSensorPosition(0));
-    	int rightErrorAbs = Math.abs(motionMagicSetPoint - rightMasterTalon.getSelectedSensorPosition(0));
+//    	int leftErrorAbs = Math.abs(leftMasterTalon.getClosedLoopError(0));
+//    	int rightErrorAbs = Math.abs(rightMasterTalon.getClosedLoopError(0));
+    	int leftErrorAbs = Math.abs(motionMagicSetPoint - (leftMasterTalon.getSelectedSensorPosition(0) - leftPositionZero));
+    	int rightErrorAbs = Math.abs(motionMagicSetPoint - (rightMasterTalon.getSelectedSensorPosition(0) - rightPositionZero));
     	return (leftErrorAbs < allowableError) && (rightErrorAbs < allowableError);
-    }
-    
-    public double getLeftError() {
-    	return leftMasterTalon.getClosedLoopError(0);
-    }
-    
-    public double getRightError() {
-    	return rightMasterTalon.getClosedLoopError(0);
-    }
-    
-    public double getLeftPosition() {
-    	return leftMasterTalon.getSelectedSensorPosition(0);
-    }
-    
-    public double getRightPosition() {
-    	return rightMasterTalon.getSelectedSensorPosition(0);
     }
     
     //====================================================
@@ -372,7 +436,14 @@ public class DriveSystem extends Subsystem {
      * @param degrees
      */
     public void setTurnTarget(double degrees) {
-    	turnSetPoint = degrees;
+    	
+    	turnSetPoint = ((degrees + navx.getYaw()) % 360);
+    	if (turnSetPoint > 180) {
+    		turnSetPoint -= 360;
+    	}
+    	else if (turnSetPoint < -180) {
+    		turnSetPoint += 360;
+    	}
     }
     
     /**
@@ -385,6 +456,8 @@ public class DriveSystem extends Subsystem {
     	}
     	else {
     		turnRunning = true;
+    		turnController.setSetpoint(turnSetPoint);
+    		turnController.enable();
     	}
     }
     
@@ -398,13 +471,22 @@ public class DriveSystem extends Subsystem {
     	}
     	else {
     		turnRunning = false;
+    		turnController.disable();
     	}
     }
     
     public boolean hasReachedTurnTarget() {
-		return false;
+		return turnController.onTarget();
     }
 
+    public double getNavxReading() {
+    	return navx.getYaw();
+    }
+    
+    public double getTurnError() {
+    	return turnSetPoint - navx.getYaw();
+    }
+    
     //====================================================
     // Normal Drive Control Methods
     
@@ -479,9 +561,11 @@ public class DriveSystem extends Subsystem {
     }
 
     private void zeroEncoderPosition() {
-    	leftMasterTalon.setSelectedSensorPosition(0, 0, RobotMap.timeoutMs);
-    	ErrorCode code = rightMasterTalon.setSelectedSensorPosition(0, 0, RobotMap.timeoutMs);
-    	System.out.println(code);
+//    	leftMasterTalon.setSelectedSensorPosition(0, 0, RobotMap.timeoutMs);
+//    	ErrorCode code = rightMasterTalon.setSelectedSensorPosition(0, 0, RobotMap.timeoutMs);
+//    	System.out.println(code);
+    	leftPositionZero = leftMasterTalon.getSelectedSensorPosition(0);
+    	rightPositionZero = rightMasterTalon.getSelectedSensorPosition(0);
     }
 
     //====================================================

@@ -2,17 +2,17 @@ package org.usfirst.frc1891.PowerUp.commands;
 
 import org.usfirst.frc1891.PowerUp.Robot;
 
+import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.command.TimedCommand;
 
 /**
  *
  */
-public class RunMotors extends TimedCommand {
+public class RunMotors extends Command {
 
 	private double speed;
 	
     public RunMotors(double speed) {
-        super(5);
         this.speed = speed;
         // Use requires() here to declare subsystem dependencies
         // eg. requires(chassis);
@@ -25,7 +25,7 @@ public class RunMotors extends TimedCommand {
 
     // Called repeatedly when this Command is scheduled to run
     protected void execute() {
-    	Robot.driveSystem.drive(speed, 0);
+    	Robot.driveSystem.drive(speed, speed);
     }
 
     // Called once after timeout
@@ -38,4 +38,9 @@ public class RunMotors extends TimedCommand {
     protected void interrupted() {
     	end();
     }
+
+	@Override
+	protected boolean isFinished() {
+		return false;
+	}
 }
