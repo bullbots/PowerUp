@@ -101,7 +101,10 @@ public class Lift extends Subsystem {
 	    //This is for climbing
 	    else if (runWinch) {
 	    	//if the winch is ingaged
-	    	liftMotor.set(0);
+	    	if (-liftMotor.getSelectedSensorPosition(0) > 0 + 100 && !intakeAtBottom()) {
+    			setLiftRatchetEngaged(false);
+    			liftMotor.set(0.6);
+    		}
 	    	setWinchRatchetEngaged(true);
 	    	//this is the climber
 	    	setLiftRatchetEngaged(false);
