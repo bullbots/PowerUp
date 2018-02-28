@@ -196,6 +196,7 @@ public class DriveSystem extends Subsystem {
 		operatorStraightener.setOutputRange(-2200, 2200);
 		operatorStraightener.setAbsoluteTolerance(3);
 		operatorStraightener.setContinuous();
+		operatorStraightener.enable();
 	}
     
     
@@ -244,9 +245,9 @@ public class DriveSystem extends Subsystem {
 //    			turndisplacement = 0;
 //    		}
     		if (printTimerCount >= 10) {
-	    		System.out.println("Setpoint: " + turnController.getSetpoint());
-	    		System.out.println("Position: " + navx.getYaw());
-	    		System.out.println("Error: " + turnController.getError());
+//	    		System.out.println("Setpoint: " + turnController.getSetpoint());
+//	    		System.out.println("Position: " + navx.getYaw());
+//	    		System.out.println("Error: " + turnController.getError());
     		}
     		
     		leftMasterTalon.set(ControlMode.Velocity, -turndisplacement);
@@ -299,20 +300,27 @@ public class DriveSystem extends Subsystem {
 			    	rightMasterTalon.set(ControlMode.Velocity, feetPerSecToEncoderUnits(rightSpeedTarget));
 	    			targetAngle = navx.getAngle();
 	    			operatorStraightener.setSetpoint(targetAngle);
+	    			System.out.println("rotating");
 		    	}
-	    		else if (rotateTimeout && opTurnTimer.hasPeriodPassed(1)) {
+	    		else if (rotateTimeout && opTurnTimer.hasPeriodPassed(2)) {
 	    			targetAngle = navx.getAngle();
 	    			operatorStraightener.setSetpoint(targetAngle);
 	    			rotateTimeout = false;
 			    	leftMasterTalon.set(ControlMode.Velocity, feetPerSecToEncoderUnits(leftSpeedTarget));
 			    	rightMasterTalon.set(ControlMode.Velocity, feetPerSecToEncoderUnits(rightSpeedTarget));
+			    	System.out.println("rotated");
 	    		}
 	    		else if (!rotateTimeout) {
 	    			opTurnTimer.stop();
 	    			opTurnTimer.reset();
 		    		leftMasterTalon.set(ControlMode.Velocity, feetPerSecToEncoderUnits(leftSpeedTarget) - opTurnDisplacement);
 				    rightMasterTalon.set(ControlMode.Velocity, feetPerSecToEncoderUnits(rightSpeedTarget) + opTurnDisplacement);
+		    		
 		    		operatorStraightener.setSetpoint(targetAngle);
+	    		}
+	    		else {
+			    	leftMasterTalon.set(ControlMode.Velocity, feetPerSecToEncoderUnits(leftSpeedTarget));
+			    	rightMasterTalon.set(ControlMode.Velocity, feetPerSecToEncoderUnits(rightSpeedTarget));
 	    		}
 	    	}
 	    	
@@ -336,6 +344,14 @@ public class DriveSystem extends Subsystem {
     		publishVelocityToShuffleBoard();
     		SmartDashboard.putNumber("Left Range", getLeftRange());
     		SmartDashboard.putNumber("Right Range", getRightRange());
+
+//    		System.out.println("leftSet: " + leftSpeedTarget);
+//    		System.out.println("turn: " + opTurnDisplacement);
+//    		
+//    		System.out.println("rotating: " + rotating);
+//    		System.out.println("diff: " + Math.abs(leftSpeedTarget - rightSpeedTarget));
+//    		System.out.println("targetAngle: " + targetAngle);
+//    		System.out.println("angle: " + navx.getYaw());
     		
     		printTimerCount = 0;
     	}
@@ -387,7 +403,6 @@ public class DriveSystem extends Subsystem {
     		operatorStraightener.setSetpoint(targetAngle);
 	    	leftMasterTalon.selectProfileSlot(0, 0);
 	    	rightMasterTalon.selectProfileSlot(0, 0);
-	    	operatorStraightener.enable();
     	}
     	else if (mode == DriveTrainControlMode.DriveForward) {
     		// Changing Talon mode
@@ -400,19 +415,27 @@ public class DriveSystem extends Subsystem {
 	    	inMotionMagicMode = true;
 	    	// Currently only using lowGear for auto movement. Will require more complexety to change.
 	    	setGear(Gear.LowGear);
-	    	operatorStraightener.disable();
 	    	zeroEncoderPosition();
     	}
     	else if (mode == DriveTrainControlMode.TurnInPlace) {
     		leftMasterTalon.selectProfileSlot(0, 0);
 	    	rightMasterTalon.selectProfileSlot(0, 0);
-	    	operatorStraightener.disable();
     	}
     	currentMode = mode;
     }
     
     public DriveTrainControlMode getControlMode() {
     	return currentMode;
+    }
+    
+    private boolean driverBlock = false;
+    
+    public void blockDriver(boolean value) {
+    	driverBlock = value;
+    }
+    
+    public boolean getDriverBlock() {
+    	return driverBlock;
     }
     
     public Gear getCurrentGear() {

@@ -1,9 +1,11 @@
 package org.usfirst.frc1891.PowerUp.commands.AutoModes;
 
+import org.usfirst.frc1891.PowerUp.commands.CheckSideScale;
 import org.usfirst.frc1891.PowerUp.commands.CheckSideSwitch;
 import org.usfirst.frc1891.PowerUp.commands.CloseIntake;
 import org.usfirst.frc1891.PowerUp.commands.ForwardPlaceCubeSwitch;
 import org.usfirst.frc1891.PowerUp.commands.ForwardTurnScale;
+import org.usfirst.frc1891.PowerUp.commands.getSide;
 
 import edu.wpi.first.wpilibj.command.CommandGroup;
 
@@ -29,7 +31,8 @@ public class OneSideScale extends CommandGroup {
         // e.g. if Command1 requires chassis, and Command2 requires arm,
         // a CommandGroup containing them would require both the chassis and the
         // arm.
+    	addSequential(new getSide());
     	addSequential(new CloseIntake());
-    	addSequential(new CheckSideSwitch(side, new ForwardTurnScale(side), new CrossLine()));
+    	addSequential(new CheckSideScale(side, new ForwardTurnScale(side), new CrossLine()));
     }
 }

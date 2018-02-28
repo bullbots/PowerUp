@@ -1,5 +1,6 @@
 package org.usfirst.frc1891.PowerUp.commands;
 
+import org.usfirst.frc1891.PowerUp.Robot;
 import org.usfirst.frc1891.PowerUp.commands.AutoModes.Side;
 
 import edu.wpi.first.wpilibj.DriverStation;
@@ -22,14 +23,13 @@ public class CheckSideScale extends ConditionalCommand {
 
 	@Override
 	protected boolean condition() {
-		String message = DriverStation.getInstance().getGameSpecificMessage();
 		if (targetSide == Side.left) {
-			if (message.charAt(1) == 'L') {
+			if (Robot.message.charAt(1) == 'L') {
 				return true;
 			}
 		}
 		else if (targetSide == Side.right) {
-			if (message.charAt(1) == 'R') {
+			if (Robot.message.charAt(1) == 'R') {
 				return true;
 			}
 		}

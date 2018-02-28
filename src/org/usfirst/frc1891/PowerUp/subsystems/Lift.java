@@ -108,7 +108,7 @@ public class Lift extends Subsystem {
 	    	//this is the lifter
 	    	
 	    	if (!stage2Bottom.get()) {
-		    	winch.set(0.7);
+		    	winch.set(1);
 	    	}
 	    	else {
 	    		winch.set(0);
@@ -144,12 +144,12 @@ public class Lift extends Subsystem {
 	    		//0.01 inches per encoder tick
 	    		//100 ticks per inch
 	    		
-	    		if (-liftMotor.getSelectedSensorPosition(0) < closedLoopTarget - 50 && !atTop()) {
+	    		if (-liftMotor.getSelectedSensorPosition(0) < closedLoopTarget - 100 && !atTop()) {
 	    			liftMotor.set(ControlMode.PercentOutput, -0.9);
 	    			setLiftRatchetEngaged(true);
 	    			downwardTimerStarted = false;
 	    		}
-	    		else if (-liftMotor.getSelectedSensorPosition(0) > closedLoopTarget + 50 && !intakeAtBottom()) {
+	    		else if (-liftMotor.getSelectedSensorPosition(0) > closedLoopTarget + 100 && !intakeAtBottom()) {
 	    			setLiftRatchetEngaged(false);
 	    			liftMotor.set(0.6);
 //	    			if (!downwardTimerStarted) {
@@ -194,7 +194,7 @@ public class Lift extends Subsystem {
 //	    				liftDownwardStarting = !downwardTimer.hasPeriodPassed(0.01);
 //	    			}
 //	    			else {
-	    				liftMotor.set(ControlMode.PercentOutput, 0.2);
+	    				liftMotor.set(ControlMode.PercentOutput, 0.6);
 //	    			}
 	    		}
 	    		// Hold lift position

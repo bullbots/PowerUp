@@ -55,15 +55,18 @@ public class DriveForwardHacky extends Command {
     	if (target > 22000) {
     		int tempTarget = target - 22000;
     		totalLoops = tempTarget / 220;
+    		totalLoops += 200;
     		endAccelerationLoop = 100;
-    		beginDeccelerationLoop = totalLoops + endAccelerationLoop;
-    		totalLoops += endAccelerationLoop + beginDeccelerationLoop;
+    		beginDeccelerationLoop = totalLoops - endAccelerationLoop;
     	}
     	else {
     		totalLoops = (int) (Math.sqrt(target) / 55);
     		endAccelerationLoop = totalLoops / 2;
     		beginDeccelerationLoop = totalLoops / 2;
     	}
+		System.out.println("beginDeccelerationLoop: " + beginDeccelerationLoop);
+		System.out.println("endAccelerationLoop: " + endAccelerationLoop);
+		System.out.println("totalLoops: " + totalLoops);
     	
 //    	startup = new Timer();
 //    	override = new Timer();
@@ -117,11 +120,14 @@ public class DriveForwardHacky extends Command {
     	if (currentLoop <= endAccelerationLoop) {
     		leftSpeed += acceleration;
     		rightSpeed += acceleration;
+    		System.out.println("accelerating");
     	}
     	else if (currentLoop > beginDeccelerationLoop) {
     		leftSpeed -= acceleration;
     		rightSpeed -= acceleration;
+    		System.out.println("deccelerating");
     	}
+    	currentLoop++;
     	
     	Robot.driveSystem.drive(leftSpeed, rightSpeed);
 //    	if (loopCounter == 10) {

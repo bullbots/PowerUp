@@ -55,7 +55,7 @@ public class JoystickDrive extends Command {
     // Called repeatedly when this Command is scheduled to run
     @Override
     protected void execute() {
-    	if (!hasRun && !Robot.driveSystem.motionRunning()) {
+    	if (!hasRun && !Robot.driveSystem.motionRunning() && !Robot.driveSystem.getDriverBlock()) {
     		System.out.println("Op control");
     		Robot.driveSystem.setControlMode(DriveTrainControlMode.OperatorControl);
     		hasRun = true;
@@ -72,6 +72,9 @@ public class JoystickDrive extends Command {
     	double turningStick = Robot.oi.getTurning(); 
     	boolean quickTurn = Robot.oi.getQuickTurn();
     	
+//    	System.out.println("throttle: " + throttleStick);
+//    	System.out.println("turning: " + turningStick);
+//    	System.out.println("quick: " + quickTurn);
     	
     	TankDriveSignal signal = cheesy.calculateSignal(throttleStick, turningStick, quickTurn);
     	

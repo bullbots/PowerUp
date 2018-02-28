@@ -47,6 +47,8 @@ public class Robot extends TimedRobot {
     public static Intake intake;
     public static Lights lights;
     
+    public static String message;
+    
     public static Compressor compressor;
     PowerDistributionPanel pdp;
 

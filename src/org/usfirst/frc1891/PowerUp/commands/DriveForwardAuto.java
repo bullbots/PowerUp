@@ -11,6 +11,7 @@
 
 package org.usfirst.frc1891.PowerUp.commands;
 import org.usfirst.frc1891.PowerUp.Robot;
+import org.usfirst.frc1891.PowerUp.subsystems.DriveSystem.DriveTrainControlMode;
 import org.usfirst.frc1891.PowerUp.subsystems.DriveSystem.Gear;
 
 import edu.wpi.first.wpilibj.Timer;
@@ -46,6 +47,7 @@ public class DriveForwardAuto extends Command {
     // Called just before this Command runs the first time
     protected void initialize() {
     	shotTimer.start();
+    	Robot.driveSystem.setControlMode(DriveTrainControlMode.OperatorControl);
     	Robot.driveSystem.setAutoShift(false);
     	Robot.driveSystem.setWantedGear(Gear.LowGear);
     }
