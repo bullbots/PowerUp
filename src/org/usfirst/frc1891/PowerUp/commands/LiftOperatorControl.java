@@ -27,7 +27,7 @@ public class LiftOperatorControl extends Command {
     	if (Robot.oi.getStartClimb()) {
     		climbing = true;
     		Robot.lift.runWinch();
-    		System.out.println("Ehy");
+    		Robot.lights.writeState(4);
     	}
     	// Reset Climber
     	else if (Robot.oi.getResetClimb()) {

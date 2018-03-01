@@ -71,6 +71,7 @@ public class Robot extends TimedRobot {
         intake = new Intake();
         
         lights = new Lights(0);
+        lights.writeState(2);
 
         // OI must be constructed after subsystems. If the OI creates Commands
         //(which it very likely will), subsystems are not guaranteed to be
@@ -111,6 +112,7 @@ public class Robot extends TimedRobot {
         autonomousCommand = chooser.getSelected();
         // schedule the autonomous command (example)
         if (autonomousCommand != null) autonomousCommand.start();
+        lights.writeState(3);
     }
 
     /**
@@ -130,6 +132,7 @@ public class Robot extends TimedRobot {
         // this line or comment it out.
         if (autonomousCommand != null) autonomousCommand.cancel();
         compressor.setClosedLoopControl(true);
+        lights.writeState(1);
     }
 
     /**
@@ -137,7 +140,7 @@ public class Robot extends TimedRobot {
      */
     @Override
     public void teleopPeriodic() {
-//    	pdp = new PowerDistributionPanel();
+    	pdp = new PowerDistributionPanel();
 //    	if (pdp.getVoltage() < 11) {
 //    		compressor.setClosedLoopControl(false);
 //    	}
@@ -146,5 +149,6 @@ public class Robot extends TimedRobot {
 //    	}
 		SmartDashboard.putNumber("pressure", (250 * (RobotMap.pressure.getAverageVoltage() / 5.0)) - 25);
         Scheduler.getInstance().run();
+        lights.writeDynamic((int)pdp.getVoltage()); 
     }
 }
