@@ -4,6 +4,7 @@ import org.usfirst.frc1891.PowerUp.commands.CheckSideSwitch;
 import org.usfirst.frc1891.PowerUp.commands.CloseIntake;
 import org.usfirst.frc1891.PowerUp.commands.DriveForward;
 import org.usfirst.frc1891.PowerUp.commands.ForwardPlaceCubeSwitch;
+import org.usfirst.frc1891.PowerUp.commands.getSide;
 
 import edu.wpi.first.wpilibj.command.CommandGroup;
 import edu.wpi.first.wpilibj.command.TimedCommand;
@@ -30,9 +31,10 @@ public class OneSideSwitch extends CommandGroup {
         // e.g. if Command1 requires chassis, and Command2 requires arm,
         // a CommandGroup containing them would require both the chassis and the
         // arm.
+    	addSequential(new getSide());
     	addSequential(new CloseIntake());
 //    	addSequential(new DriveForward(8));
 //    	addSequential(new TimedCommand(0.5));
-    	addSequential(new CheckSideSwitch(side, new ForwardPlaceCubeSwitch(11, 20)));
+    	addSequential(new CheckSideSwitch(side, new ForwardPlaceCubeSwitch(11, 20), new CrossLine()));
     }
 }

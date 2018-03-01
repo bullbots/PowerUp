@@ -1,20 +1,15 @@
-package org.usfirst.frc1891.PowerUp.commands.AutoModes;
+package org.usfirst.frc1891.PowerUp.commands;
 
-import org.usfirst.frc1891.PowerUp.commands.CheckSideSwitch;
-import org.usfirst.frc1891.PowerUp.commands.DriveForward;
-import org.usfirst.frc1891.PowerUp.commands.ForwardPlaceCubeSwitch;
-import org.usfirst.frc1891.PowerUp.commands.MiddleSwitch;
-import org.usfirst.frc1891.PowerUp.commands.Turn;
-import org.usfirst.frc1891.PowerUp.commands.getSide;
+import org.usfirst.frc1891.PowerUp.commands.AutoModes.Side;
 
 import edu.wpi.first.wpilibj.command.CommandGroup;
 
 /**
  *
  */
-public class TwoSidesSwitch extends CommandGroup {
+public class MiddleSwitch extends CommandGroup {
 
-    public TwoSidesSwitch() {
+    public MiddleSwitch(Side side) {
         // Add Commands here:
         // e.g. addSequential(new Command1());
         //      addSequential(new Command2());
@@ -31,8 +26,17 @@ public class TwoSidesSwitch extends CommandGroup {
         // e.g. if Command1 requires chassis, and Command2 requires arm,
         // a CommandGroup containing them would require both the chassis and the
         // arm.
-    	addSequential(new getSide());
-    	addSequential(DriveForward());
-    	addSequential(new CheckSideSwitch(Side.left, new MiddleSwitch(Side.left), new MiddleSwitch(Side.right)));
+
+    	double turn;
+    	if (side == Side.left) {
+    		turn = 30;
+    	}
+    	else if (side == Side.right) {
+    		turn = -30;
+    	}
+    	addSequential(new Turn(turn));
+    	addSequential(new DriveForward(inputTarget));
+    	addSequential(new Turn(turn));
+    	addSequential(new ForwardPlaceCubeSwitch(distanceFt, timeout));
     }
 }
