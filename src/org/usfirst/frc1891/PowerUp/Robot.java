@@ -81,9 +81,10 @@ public class Robot extends TimedRobot {
         // Add commands to Autonomous Sendable Chooser
 
         chooser.addDefault("CrossLine", new CrossLine());
-        chooser.addObject("LeftSideSwitch", new OneSideSwitch(Side.left));
-        chooser.addObject("RightSideSwitch", new OneSideSwitch(Side.right));
-        chooser.addObject("Scale", new OneSideScale(Side.right));
+        chooser.addObject("LeftSwitch", new OneSideSwitch(Side.left));
+        chooser.addObject("RightSwitch", new OneSideSwitch(Side.right));
+        chooser.addObject("LeftScale", new OneSideScale(Side.left));
+        chooser.addObject("RightScale", new OneSideScale(Side.right));
 
         SmartDashboard.putData("Auto mode", chooser);
     }
