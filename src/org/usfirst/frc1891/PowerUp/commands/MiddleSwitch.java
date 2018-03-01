@@ -27,7 +27,7 @@ public class MiddleSwitch extends CommandGroup {
         // a CommandGroup containing them would require both the chassis and the
         // arm.
 
-    	double turn;
+    	double turn = 0;
     	if (side == Side.left) {
     		turn = 30;
     	}
@@ -35,8 +35,10 @@ public class MiddleSwitch extends CommandGroup {
     		turn = -30;
     	}
     	addSequential(new Turn(turn));
-    	addSequential(new DriveForward(inputTarget));
-    	addSequential(new Turn(turn));
-    	addSequential(new ForwardPlaceCubeSwitch(distanceFt, timeout));
+    	addParallel(new setLiftPosition(24));
+    	addSequential(new DriveForward(4));
+    	addSequential(new Turn(-turn));
+    	addSequential(new ForwardPlaceCubeSwitch(7, 3));
+    	addSequential(new OpenIntake());
     }
 }

@@ -32,7 +32,7 @@ public class TwoSidesSwitch extends CommandGroup {
         // a CommandGroup containing them would require both the chassis and the
         // arm.
     	addSequential(new getSide());
-    	addSequential(DriveForward());
+    	addSequential(new DriveForward(3));
     	addSequential(new CheckSideSwitch(Side.left, new MiddleSwitch(Side.left), new MiddleSwitch(Side.right)));
     }
 }
