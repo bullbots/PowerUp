@@ -56,6 +56,10 @@ public class Lift extends Subsystem {
 	private DoubleSolenoid buddyBar = new DoubleSolenoid(RobotMap.buddyBarSolenoidOutPort, RobotMap.buddyBarSolenoidInPort);
 	private boolean notTriggered;
 	
+	private boolean climbLiftTimeStarted = false;
+	private Timer climbLiftTime = new Timer();
+	private boolean climbLiftTimeFinished = false;
+	
 	public Lift() {
 		buddyBar.set(Value.kReverse);
 	}
@@ -74,7 +78,7 @@ public class Lift extends Subsystem {
     public void periodic() {
     	
     	if (!intakeBottom.get() && notTriggered) {
-    		liftMotor.setSelectedSensorPosition(0, 0, 5);
+    		liftMotor.setSelectedSensorPosition(0, 0, RobotMap.timeoutMs);
     		notTriggered = false;
     	}
     	else if (intakeBottom.get()) {
@@ -101,10 +105,21 @@ public class Lift extends Subsystem {
 	    //This is for climbing
 	    else if (runWinch) {
 	    	//if the winch is ingaged
-	    	if (-liftMotor.getSelectedSensorPosition(0) > 0 + 100 && !intakeAtBottom()) {
-    			setLiftRatchetEngaged(false);
+    		if (!climbLiftTimeStarted) {
+    			climbLiftTime.start();
+    			climbLiftTimeStarted = true;
+    		}
+    		else if (climbLiftTime.hasPeriodPassed(2) || climbLiftTimeFinished) {
+    			climbLiftTimeFinished = true;
+    			liftMotor.set(0);
+    		}
+    		else {
     			liftMotor.set(0.6);
     		}
+//	    	if (-liftMotor.getSelectedSensorPosition(0) > 0 + 100 && !intakeAtBottom()) {
+//    			setLiftRatchetEngaged(false);
+//    			liftMotor.set(0.6);
+//    		}
 	    	setWinchRatchetEngaged(true);
 	    	//this is the climber
 	    	setLiftRatchetEngaged(false);
@@ -147,11 +162,13 @@ public class Lift extends Subsystem {
 	    		//0.01 inches per encoder tick
 	    		//100 ticks per inch
 	    		
+	    		//go up
 	    		if (-liftMotor.getSelectedSensorPosition(0) < closedLoopTarget - 100 && !atTop()) {
 	    			liftMotor.set(ControlMode.PercentOutput, -0.9);
 	    			setLiftRatchetEngaged(true);
 	    			downwardTimerStarted = false;
 	    		}
+	    		// go down
 	    		else if (-liftMotor.getSelectedSensorPosition(0) > closedLoopTarget + 100 && !intakeAtBottom()) {
 	    			setLiftRatchetEngaged(false);
 	    			liftMotor.set(0.6);
@@ -177,7 +194,7 @@ public class Lift extends Subsystem {
 	    	}
 	    	else {
 	    		// Move lift up
-	    		if(directionLift == 1) {
+	    		if(directionLift == 1 && !atTop()) {
 	    			liftMotor.set(ControlMode.PercentOutput, -0.9);
 	    			setLiftRatchetEngaged(true);
 	    			downwardTimerStarted = false;
@@ -185,7 +202,7 @@ public class Lift extends Subsystem {
 //    				downwardTimer.reset();
 	    		}
 	    		// Move lift down
-	    		else if(directionLift == -1 && intakeBottom.get()) {
+	    		else if(directionLift == -1 && !intakeAtBottom() && -liftMotor.getSelectedSensorPosition(0) > 200) {
 	    			setLiftRatchetEngaged(false);
 //	    			if (!downwardTimerStarted) {
 //	    				downwardTimer.start();
@@ -210,8 +227,8 @@ public class Lift extends Subsystem {
 	    		}
 	    	}
     	}
-    	SmartDashboard.getBoolean("limitSwitch", intakeBottom.get());
-    	SmartDashboard.getBoolean("limitSwitch", stage2Bottom.get());
+//    	SmartDashboard.getBoolean("limitSwitch", intakeBottom.get());
+//    	SmartDashboard.getBoolean("limitSwitch", stage2Bottom.get());
     	SmartDashboard.putNumber("Lift Position: ", liftMotor.getSelectedSensorPosition(0));
     }
     

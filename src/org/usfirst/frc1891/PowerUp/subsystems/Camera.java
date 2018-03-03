@@ -36,12 +36,12 @@ public class Camera extends Subsystem {
     }
     
     public void UpCamera() {
-    	cameraServo.setPosition(0);	
+    	cameraServo.setPosition(100);	
     	isCameraUp = true;
 	}
     
     public void DownCamera() {
-    	cameraServo.setPosition(100);
+    	cameraServo.setPosition(0);
     	isCameraUp = false;
     }
     

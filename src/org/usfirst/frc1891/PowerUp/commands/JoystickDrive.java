@@ -68,6 +68,17 @@ public class JoystickDrive extends Command {
     		Robot.driveSystem.setWantedGear(Gear.HighGear);
     	}
     	
+    	if (Robot.oi.getDriverDamp()) {
+    		Robot.driveSystem.setDamp(true);
+    	}
+    	else {
+    		Robot.driveSystem.setDamp(false);
+    	}
+    	
+    	if (Robot.oi.getDriverResetAngle()) {
+    		Robot.driveSystem.updateTargetAngle();
+    	}
+    	
     	double throttleStick = Robot.oi.getThrottle();
     	double turningStick = Robot.oi.getTurning(); 
     	boolean quickTurn = Robot.oi.getQuickTurn();

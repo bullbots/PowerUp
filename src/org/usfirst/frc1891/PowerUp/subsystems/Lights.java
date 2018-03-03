@@ -27,17 +27,17 @@ public class Lights extends Subsystem {
 		value2 = 0;
 		value3 = 0;
 		batteryLow = false;
-		
-		SmartDashboard.putNumber("Lights", 0);
-		SmartDashboard.putNumber("Comma", 0);
+//		
+//		SmartDashboard.putNumber("Lights", 0);
+//		SmartDashboard.putNumber("Comma", 0);
 		
 	}
 	
 	public void periodic() {
-		double comm = SmartDashboard.getNumber("Comma", 0);
-		double Test = SmartDashboard.getNumber("Lights", 0);
-		writeState((int)comm);
-		writeDynamic((int) Test);
+//		double comm = SmartDashboard.getNumber("Comma", 0);
+//		double Test = SmartDashboard.getNumber("Lights", 0);
+//		writeState((int)comm);
+//		writeDynamic((int) Test);
 	}
 	
 	/**

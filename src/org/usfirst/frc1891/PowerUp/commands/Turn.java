@@ -73,7 +73,7 @@ public class Turn extends Command {
     // Make this return true when this Command no longer needs to run execute()
     @Override
     protected boolean isFinished() {
-    	return startup.hasPeriodPassed(0.5) && Robot.driveSystem.hasReachedTurnTarget();
+    	return startup.hasPeriodPassed(0.25) && Robot.driveSystem.hasReachedTurnTarget();
 //    	return (startup.hasPeriodPassed(0.5) && Robot.driveSystem.hasReachedMotionTarget());
     }
 

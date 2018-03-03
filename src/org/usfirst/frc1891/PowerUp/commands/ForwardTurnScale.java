@@ -3,6 +3,7 @@ package org.usfirst.frc1891.PowerUp.commands;
 import org.usfirst.frc1891.PowerUp.commands.AutoModes.Side;
 
 import edu.wpi.first.wpilibj.command.CommandGroup;
+import edu.wpi.first.wpilibj.command.TimedCommand;
 
 /**
  *
@@ -30,19 +31,20 @@ public class ForwardTurnScale extends CommandGroup {
     	addSequential(new DriveForwardAuto(-2, 0.25));
     	addSequential(new DriveForwardAuto(-3, 0.5 / 3.0));
     	addSequential(new DriveForwardAuto(-4, 1.0 / 4.0));
-    	addSequential(new DriveForwardAuto(-5, 19.0 / 5.0));
+    	addSequential(new DriveForwardAuto(-5, 20.0 / 5.0));
     	addSequential(new DriveForwardAuto(-4, 1.0 / 4.0));
     	addSequential(new DriveForwardAuto(-3, 0.5 / 3.0));
     	addSequential(new DriveForwardAuto(-2, 0.25 / 2.0));
     	addSequential(new DriveForwardAuto(-1, 0.25 / 1.0));
 //    	addSequential(new DriveForward(25));
-    	addSequential(new CheckSideScale(side, new Turn(-90), new Turn(90)));
+    	addSequential(new CheckSideScale(Side.right, new Turn(-90), new Turn(90)));
     	addSequential(new setLiftPosition(66));
     	addSequential(new DriveForwardAuto(1, 2.0 / 1.0));
-    	addSequential(new DriveForwardAuto(-1, 3.0 / 1.0));
+    	addSequential(new DriveForwardAuto(-1.5, 3.0 / 1.0));
 //    	addSequential(new DriveForward(1.33));
 //    	addSequential(new DriveForwardAuto(1, 1));
     	addSequential(new OpenIntake());
+    	addSequential(new TimedCommand(0.5));
     	addSequential(new DriveForwardAuto(1, 3.0 / 1.0));
     	addSequential(new setLiftPosition(0));
     	

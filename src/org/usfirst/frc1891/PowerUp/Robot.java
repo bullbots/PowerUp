@@ -26,6 +26,7 @@ import org.usfirst.frc1891.PowerUp.commands.AutoModes.CrossLine;
 import org.usfirst.frc1891.PowerUp.commands.AutoModes.OneSideScale;
 import org.usfirst.frc1891.PowerUp.commands.AutoModes.OneSideSwitch;
 import org.usfirst.frc1891.PowerUp.commands.AutoModes.Side;
+import org.usfirst.frc1891.PowerUp.commands.AutoModes.TwoSidesSwitch;
 import org.usfirst.frc1891.PowerUp.subsystems.*;
 
 /**
@@ -59,6 +60,7 @@ public class Robot extends TimedRobot {
      */
     @Override
     public void robotInit() {
+//    	pdp = new PowerDistributionPanel();
         RobotMap.init();
         driveSystem = new DriveSystem();
         
@@ -84,10 +86,12 @@ public class Robot extends TimedRobot {
         chooser.addDefault("CrossLine", new CrossLine());
         chooser.addObject("LeftSwitch", new OneSideSwitch(Side.left));
         chooser.addObject("RightSwitch", new OneSideSwitch(Side.right));
+        chooser.addObject("MiddleSwitch", new TwoSidesSwitch());
         chooser.addObject("LeftScale", new OneSideScale(Side.left));
         chooser.addObject("RightScale", new OneSideScale(Side.right));
 
         SmartDashboard.putData("Auto mode", chooser);
+        lights.writeDynamic(12); 
     }
 
     /**
@@ -140,7 +144,6 @@ public class Robot extends TimedRobot {
      */
     @Override
     public void teleopPeriodic() {
-    	pdp = new PowerDistributionPanel();
 //    	if (pdp.getVoltage() < 11) {
 //    		compressor.setClosedLoopControl(false);
 //    	}
@@ -149,6 +152,5 @@ public class Robot extends TimedRobot {
 //    	}
 		SmartDashboard.putNumber("pressure", (250 * (RobotMap.pressure.getAverageVoltage() / 5.0)) - 25);
         Scheduler.getInstance().run();
-        lights.writeDynamic((int)pdp.getVoltage()); 
     }
 }

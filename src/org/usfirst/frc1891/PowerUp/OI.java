@@ -78,7 +78,7 @@ public class OI {
         joystickButton1 = new JoystickButton(operatorStick, 2);
         joystickButton1.whenPressed(new UpDownAngle());
         joystickButton2 = new JoystickButton(operatorStick, 3);
-        joystickButton2.whenPressed(new setLiftPosition(0));
+        joystickButton2.whenPressed(new setLiftPosition(1));
         joystickButton3 = new JoystickButton(operatorStick, 4);
         joystickButton3.whenPressed(new setLiftPosition(24));
         joystickButton4 = new JoystickButton(operatorStick, 5);
@@ -137,6 +137,14 @@ public class OI {
 //    	return turningStick.getRawButton(3); // Two Sticks
 //    	return throttleStick.getRawButton(5); // Brennen's mess
     }
+
+	public boolean getDriverDamp() {
+		return controller.getRawButton(5);
+	}
+	
+	public boolean getDriverResetAngle() {
+		return controller.getRawButton(3);
+	}
     
     public boolean getCloseIntake() {
     	if (controller.getRawAxis(3) >= 0.6) {

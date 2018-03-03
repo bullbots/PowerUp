@@ -2,6 +2,7 @@ package org.usfirst.frc1891.PowerUp.commands;
 
 import org.usfirst.frc1891.PowerUp.Robot;
 
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.command.Command;
 
 /**
@@ -43,6 +44,7 @@ public class LiftOperatorControl extends Command {
 	//    		System.out.println(Robot.oi.getLiftControl());
 	    		if (-Robot.oi.getLiftControl() > 0.2) output = 1;
 	    		else if (-Robot.oi.getLiftControl() < -0.2) output = -1;
+	    		
 	    		Robot.lift.setLiftDirection(output);
 	    	}
 	    	else {

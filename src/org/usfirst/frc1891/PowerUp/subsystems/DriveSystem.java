@@ -83,6 +83,7 @@ public class DriveSystem extends Subsystem {
     
     private double leftSpeedTarget = 0;
     private double rightSpeedTarget = 0;
+    private boolean driverDamp = false;
     /**
      * State Variable for position control of drivetrain for auto driving (using the motion magic mode on
      * TalonSRXs) versus normal operator control.
@@ -254,6 +255,13 @@ public class DriveSystem extends Subsystem {
     		rightMasterTalon.set(ControlMode.Velocity, turndisplacement);
     	}
     	else if (currentMode == DriveTrainControlMode.OperatorControl) {
+    		if (driverDamp) {
+    			leftSpeedTarget = leftSpeedTarget > 2 ? 2 : leftSpeedTarget;
+    			rightSpeedTarget = rightSpeedTarget > 2 ? 2 : rightSpeedTarget;
+    			leftSpeedTarget = leftSpeedTarget < -2 ? -2 : leftSpeedTarget;
+    			rightSpeedTarget = rightSpeedTarget < -2 ? -2 : rightSpeedTarget;
+    		}
+    		
     		// Auto shift policy versus manual
 	    	if (doAutoShift) {
 	    		// Get average speeds of motors
@@ -608,6 +616,14 @@ public class DriveSystem extends Subsystem {
      */
     public void setWantedGear(Gear gear) {
     	wantedGear = gear;
+    }
+    
+    public void setDamp(boolean value) {
+    	driverDamp = value;
+    }
+    
+    public void updateTargetAngle() {
+    	targetAngle = navx.getAngle();
     }
 
     /**

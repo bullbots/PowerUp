@@ -1,9 +1,11 @@
 package org.usfirst.frc1891.PowerUp.commands.AutoModes;
 
 import org.usfirst.frc1891.PowerUp.commands.CheckSideSwitch;
+import org.usfirst.frc1891.PowerUp.commands.CloseIntake;
 import org.usfirst.frc1891.PowerUp.commands.DriveForward;
 import org.usfirst.frc1891.PowerUp.commands.ForwardPlaceCubeSwitch;
 import org.usfirst.frc1891.PowerUp.commands.MiddleSwitch;
+import org.usfirst.frc1891.PowerUp.commands.OpenIntake;
 import org.usfirst.frc1891.PowerUp.commands.Turn;
 import org.usfirst.frc1891.PowerUp.commands.getSide;
 
@@ -32,6 +34,7 @@ public class TwoSidesSwitch extends CommandGroup {
         // a CommandGroup containing them would require both the chassis and the
         // arm.
     	addSequential(new getSide());
+    	addSequential(new CloseIntake());
     	addSequential(new DriveForward(3));
     	addSequential(new CheckSideSwitch(Side.left, new MiddleSwitch(Side.left), new MiddleSwitch(Side.right)));
     }

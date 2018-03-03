@@ -29,16 +29,16 @@ public class MiddleSwitch extends CommandGroup {
 
     	double turn = 0;
     	if (side == Side.left) {
-    		turn = 30;
+    		turn = -45;
     	}
     	else if (side == Side.right) {
-    		turn = -30;
+    		turn = 45;
     	}
     	addSequential(new Turn(turn));
     	addParallel(new setLiftPosition(24));
-    	addSequential(new DriveForward(4));
+    	addSequential(new DriveForward(6));
     	addSequential(new Turn(-turn));
-    	addSequential(new ForwardPlaceCubeSwitch(7, 3));
+    	addSequential(new ForwardPlaceCubeSwitch(3, 1));
     	addSequential(new OpenIntake());
     }
 }
