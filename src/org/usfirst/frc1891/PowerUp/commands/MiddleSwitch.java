@@ -38,7 +38,7 @@ public class MiddleSwitch extends CommandGroup {
     	addParallel(new setLiftPosition(24));
     	addSequential(new DriveForward(6));
     	addSequential(new Turn(-turn));
-    	addSequential(new ForwardPlaceCubeSwitch(3, 1));
+    	addSequential(new ForwardPlaceCubeSwitch(3, 3));
     	addSequential(new OpenIntake());
     }
 }

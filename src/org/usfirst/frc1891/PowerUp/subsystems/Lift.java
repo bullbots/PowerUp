@@ -202,7 +202,7 @@ public class Lift extends Subsystem {
 //    				downwardTimer.reset();
 	    		}
 	    		// Move lift down
-	    		else if(directionLift == -1 && !intakeAtBottom() && -liftMotor.getSelectedSensorPosition(0) > 200) {
+	    		else if(directionLift == -1 && !intakeAtBottom() && -liftMotor.getSelectedSensorPosition(0) > 100) {
 	    			setLiftRatchetEngaged(false);
 //	    			if (!downwardTimerStarted) {
 //	    				downwardTimer.start();

@@ -308,7 +308,7 @@ public class DriveSystem extends Subsystem {
 			    	rightMasterTalon.set(ControlMode.Velocity, feetPerSecToEncoderUnits(rightSpeedTarget));
 	    			targetAngle = navx.getAngle();
 	    			operatorStraightener.setSetpoint(targetAngle);
-	    			System.out.println("rotating");
+//	    			System.out.println("rotating");
 		    	}
 	    		else if (rotateTimeout && opTurnTimer.hasPeriodPassed(2)) {
 	    			targetAngle = navx.getAngle();
@@ -316,7 +316,7 @@ public class DriveSystem extends Subsystem {
 	    			rotateTimeout = false;
 			    	leftMasterTalon.set(ControlMode.Velocity, feetPerSecToEncoderUnits(leftSpeedTarget));
 			    	rightMasterTalon.set(ControlMode.Velocity, feetPerSecToEncoderUnits(rightSpeedTarget));
-			    	System.out.println("rotated");
+//			    	System.out.println("rotated");
 	    		}
 	    		else if (!rotateTimeout) {
 	    			opTurnTimer.stop();
@@ -352,6 +352,9 @@ public class DriveSystem extends Subsystem {
     		publishVelocityToShuffleBoard();
     		SmartDashboard.putNumber("Left Range", getLeftRange());
     		SmartDashboard.putNumber("Right Range", getRightRange());
+
+        	System.out.println("Navx Error: " + (turnSetPoint - navx.getYaw()));
+        	System.out.println("Controller Error: " + turnController.getError());
 
 //    		System.out.println("leftSet: " + leftSpeedTarget);
 //    		System.out.println("turn: " + opTurnDisplacement);

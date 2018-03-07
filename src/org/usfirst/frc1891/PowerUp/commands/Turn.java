@@ -86,6 +86,7 @@ public class Turn extends Command {
     	Robot.driveSystem.stopTurn();
     	
     	System.out.println("Turn finished");
+    	System.out.println("Seconds run: " + startup.get());
     	System.out.println("Position: " + Robot.driveSystem.getNavxReading());
     	System.out.println("Error: " + Robot.driveSystem.getTurnError());
     	
