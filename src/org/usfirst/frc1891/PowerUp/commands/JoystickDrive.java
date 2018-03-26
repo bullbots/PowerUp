@@ -15,10 +15,13 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 import org.usfirst.frc1891.PowerUp.CheesyDriveInterpreter;
 import org.usfirst.frc1891.PowerUp.Robot;
+import org.usfirst.frc1891.PowerUp.RobotMap;
 import org.usfirst.frc1891.PowerUp.TankDriveSignal;
 import org.usfirst.frc1891.PowerUp.subsystems.DriveSystem;
 import org.usfirst.frc1891.PowerUp.subsystems.DriveSystem.DriveTrainControlMode;
 import org.usfirst.frc1891.PowerUp.subsystems.DriveSystem.Gear;
+
+import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 
 /**
  *

@@ -3,21 +3,32 @@ package org.usfirst.frc1891.PowerUp.subsystems;
 import org.usfirst.frc1891.PowerUp.RobotMap;
 import org.usfirst.frc1891.PowerUp.commands.IntakeOperatorControl;
 
+import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
+
+import edu.wpi.first.wpilibj.Counter;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
+import edu.wpi.first.wpilibj.Spark;
 import edu.wpi.first.wpilibj.command.Subsystem;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+
 
 /**
  *
  */
 public class Intake extends Subsystem {
-
+	
 	private final DoubleSolenoid gripperSolenoid;
-	private final DoubleSolenoid kickerSolenoid;
+	private final WPI_TalonSRX wheeledIntakeLeft = RobotMap.wheeledIntakeLeft;
+	private final WPI_TalonSRX wheeledIntakeRight = RobotMap.wheeledIntakeRight;
+	public Value wantedGripperState;
+	public Value currentGripperState;
+
 	
 	public Intake() {
-		gripperSolenoid = new DoubleSolenoid(RobotMap.intakeSolenoidOpenPort, RobotMap.intakeSolenoidClosePort);
-		kickerSolenoid = new DoubleSolenoid(RobotMap.kickerSolenoidOutPort, RobotMap.kickerSolenoidInPort);
+    	wheeledIntakeLeft.set(0);
+    	wheeledIntakeRight.set(0);
+    	gripperSolenoid = new DoubleSolenoid(RobotMap.intakeSolenoidOpenPort, RobotMap.intakeSolenoidClosePort);
 	}
 	
     // Put methods for controlling this subsystem
@@ -28,45 +39,31 @@ public class Intake extends Subsystem {
         //setDefaultCommand(new MySpecialCommand());
     	setDefaultCommand(new IntakeOperatorControl());
     }
+    
+    public void periodic() {
+	    if (wantedGripperState != currentGripperState) {
+	    	gripperSolenoid.set(Value.kForward);
+	    	currentGripperState = Value.kForward;
+	    }
+	    else if (gripperSolenoid.get() != Value.kOff) {
+	    	gripperSolenoid.set(Value.kOff);
+	    }
+	    
+    }
 	
-	public void open() {
-		if (gripperSolenoid.get() == Value.kOff) {
-			gripperSolenoid.set(Value.kForward);
-		}
-		else if (gripperSolenoid.get() != Value.kForward) {
-			gripperSolenoid.set(Value.kForward);
-		}
-	}
+    public void set(double value) {
+    	wheeledIntakeLeft.set(value);
+    	wheeledIntakeRight.set(value);
+    }
 	
 	public void close() {
-		if (gripperSolenoid.get() == Value.kOff) {
-			gripperSolenoid.set(Value.kReverse);
-		}
-		else if (gripperSolenoid.get() != Value.kReverse) {
-			gripperSolenoid.set(Value.kReverse);
-			kickerSolenoid.set(Value.kReverse);
-		}
+		wantedGripperState = Value.kReverse;
 	}
 	
-	public void KickerOut() {
-		if (kickerSolenoid.get() == Value.kOff) {
-			kickerSolenoid.set(Value.kForward);
-		}
-		else if (gripperSolenoid.get() == Value.kReverse) {
-			kickerSolenoid.set(Value.kReverse);
-		}
-		else if (kickerSolenoid.get() != Value.kForward) {
-			kickerSolenoid.set(Value.kForward);
-		}
+	public void open() {
+		wantedGripperState = Value.kForward;
 	}
 	
-	public void KickerIn() {
-		if (kickerSolenoid.get() == Value.kOff) {
-			kickerSolenoid.set(Value.kReverse);
-		}
-		else if (kickerSolenoid.get() != Value.kReverse) {
-			kickerSolenoid.set(Value.kReverse);
-		}
+	
+	
 	}
-}
-

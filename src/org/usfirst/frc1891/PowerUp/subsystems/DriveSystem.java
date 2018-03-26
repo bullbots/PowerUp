@@ -353,8 +353,8 @@ public class DriveSystem extends Subsystem {
     		SmartDashboard.putNumber("Left Range", getLeftRange());
     		SmartDashboard.putNumber("Right Range", getRightRange());
 
-        	System.out.println("Navx Error: " + (turnSetPoint - navx.getYaw()));
-        	System.out.println("Controller Error: " + turnController.getError());
+//        	System.out.println("Navx Error: " + (turnSetPoint - navx.getYaw()));
+//        	System.out.println("Controller Error: " + turnController.getError());
 
 //    		System.out.println("leftSet: " + leftSpeedTarget);
 //    		System.out.println("turn: " + opTurnDisplacement);

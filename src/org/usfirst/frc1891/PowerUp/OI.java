@@ -165,13 +165,22 @@ public class OI {
     }
     
     public boolean getKickBox() {
-		return controller.getRawButton(1);
+		return controller.getRawButton(2);
 	}
     
-    public void setRumble(double value) {
-    	controller.setRumble(RumbleType.kLeftRumble, value);
-    	controller.setRumble(RumbleType.kRightRumble, value);
+//    public boolean setRumble(double value) {
+//    	controller.setRumble(RumbleType.kLeftRumble, value);
+//    	controller.setRumble(RumbleType.kRightRumble, value);
+//    }
+    	
+    public boolean getIntakeTest() {
+    	return controller.getRawButton(1);
     }
+    
+    public boolean getSpitOut() {
+    	return controller.getRawButton(2);
+    }
+    
     
     public double getLiftControl() {
     	return operatorStick.getRawAxis(1);
@@ -180,7 +189,7 @@ public class OI {
     public boolean getLiftOperatorOverride() {
     	return operatorStick.getRawButton(1);
     }
-    
+
 	public boolean getScaleButton() {
 		return operatorStick.getRawButton(5);
 	}
